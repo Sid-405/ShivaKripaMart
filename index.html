@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0E5A5E" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17231F" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ShivaKripa">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>ShivaKripa Mart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400..700&family=Baloo+Chettan+2:wght@500..800&display=swap" rel="stylesheet">
+<style>
+/* Layout: phone first, one column with a bottom bar. From 900px a left rail and a two-pane selling screen.
+   The bill is the one paper-like object (ruled like the shop's bill book); everything else stays quiet. */
+:root{
+  --paper:#F2F6F1; --surface:#FFFFFF; --sunk:#E6EEE8; --ink:#13231F; --muted:#55675F; --line:#D2DDD5;
+  --teal:#0E5A5E; --teal-ink:#FFFFFF; --teal-soft:#DAEAE8; --gold:#9A6F06; --gold-soft:#F6ECCB;
+  --good:#1D7A48; --good-soft:#DDF0E4; --warn:#9A5600; --warn-soft:#FBEBD0; --bad:#B3261E; --bad-soft:#F9E1DE;
+  --slip:#FCFDF7; --rule:#CFDCE8; --margin:#E8B1AA; --shade:rgba(19,35,31,.45);
+  --display:'Baloo Chettan 2','Anek Malayalam',system-ui,sans-serif;
+  --body:'Anek Malayalam',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --r:10px; --r-sm:6px; --lift:0 1px 2px rgba(19,35,31,.08),0 8px 24px rgba(19,35,31,.10);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#0F1917; --surface:#17231F; --sunk:#1F2E2A; --ink:#E8F0EC; --muted:#9DB0A8; --line:#2C3E39;
+  --teal:#5CC2BC; --teal-ink:#06201F; --teal-soft:#1D3A38; --gold:#E3BC55; --gold-soft:#3A3115;
+  --good:#6FCF97; --good-soft:#173527; --warn:#F0B354; --warn-soft:#3B2C10; --bad:#F28B82; --bad-soft:#40201D;
+  --slip:#1B2824; --rule:#2B4150; --margin:#6B3A36; --shade:rgba(0,0,0,.6);
+  --lift:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark } }
+:root[data-theme="dark"]{
+  --paper:#0F1917; --surface:#17231F; --sunk:#1F2E2A; --ink:#E8F0EC; --muted:#9DB0A8; --line:#2C3E39;
+  --teal:#5CC2BC; --teal-ink:#06201F; --teal-soft:#1D3A38; --gold:#E3BC55; --gold-soft:#3A3115;
+  --good:#6FCF97; --good-soft:#173527; --warn:#F0B354; --warn-soft:#3B2C10; --bad:#F28B82; --bad-soft:#40201D;
+  --slip:#1B2824; --rule:#2B4150; --margin:#6B3A36; --shade:rgba(0,0,0,.6);
+  --lift:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark }
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.4;
+  -webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+h1,h2,h3,p{margin:0}
+h1,h2,h3,.num{font-family:var(--display);line-height:1.15;text-wrap:balance}
+h2{font-size:1.25rem;font-weight:600}
+h3{font-size:1.05rem;font-weight:600}
+.num{font-variant-numeric:tabular-nums;font-weight:600}
+.muted{color:var(--muted)} .small{font-size:.875rem} .right{text-align:right} .nowrap{white-space:nowrap}
+.good{color:var(--good)} .bad{color:var(--bad)} .warn{color:var(--warn)}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:4px}
+svg.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ---------- frame ---------- */
+body{display:flex;flex-direction:column}
+#app{flex:1;min-height:0;display:flex;flex-direction:column}
+.main{flex:1;min-height:0;display:flex;flex-direction:column;min-width:0}
+.top{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--surface)}
+.top h1{font-size:1.3rem;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top .who{font-size:.875rem;color:var(--muted);white-space:nowrap}
+.view{--vp:16px;flex:1;min-height:0;overflow-y:auto;padding-block:var(--vp) 28px;padding-inline:16px;-webkit-overflow-scrolling:touch}
+.wrap{max-width:1080px;margin-inline:auto;display:flex;flex-direction:column;gap:16px}
+.nav{display:flex;border-top:1px solid var(--line);background:var(--surface);padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav button{flex:1;border:0;background:none;padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-size:.75rem;color:var(--muted);min-width:0}
+.nav button[aria-current="page"]{color:var(--teal);font-weight:600}
+.nav button.sellnav svg{background:var(--teal);color:var(--teal-ink);border-radius:50%;padding:7px;width:40px;height:40px;margin-top:-16px;box-shadow:var(--lift)}
+.rail{display:none}
+@media (min-width:900px){
+  #app{flex-direction:row}
+  .nav{display:none}
+  .rail{display:flex;flex-direction:column;gap:2px;width:216px;flex:none;background:var(--surface);border-right:1px solid var(--line);padding:14px 10px;overflow-y:auto}
+  .rail .brand{font-family:var(--display);font-weight:700;font-size:1.35rem;line-height:1.1;padding:4px 10px 2px;color:var(--teal)}
+  .rail .place{font-size:.8rem;color:var(--muted);padding:0 10px 12px}
+  .rail button{display:flex;align-items:center;gap:10px;border:0;background:none;padding:9px 10px;border-radius:var(--r-sm);text-align:left;color:var(--ink)}
+  .rail button:hover{background:var(--sunk)}
+  .rail button[aria-current="page"]{background:var(--teal-soft);color:var(--teal);font-weight:600}
+  .rail hr{border:0;border-top:1px solid var(--line);margin:8px 6px;width:auto}
+  .rail .spacer{flex:1}
+  .view{--vp:22px;padding-block:var(--vp) 36px;padding-inline:28px}
+}
+
+/* ---------- controls ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:8px 16px;border-radius:var(--r);
+  border:1px solid var(--line);background:var(--surface);font-weight:600;text-decoration:none;color:var(--ink)}
+.btn:hover{border-color:var(--teal)}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:var(--teal-ink)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.quiet{border-color:transparent;background:none;color:var(--teal)}
+.btn.big{min-height:52px;font-size:1.1rem;width:100%}
+.btn.sm{min-height:36px;padding:4px 10px;font-size:.875rem}
+.btn[disabled]{opacity:.55;cursor:default}
+.btn.busy{position:relative;color:transparent!important}
+.btn.busy::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;border:2px solid var(--muted);border-top-color:transparent;animation:spin .7s linear infinite}
+.btn.primary.busy::after{border-color:var(--teal-ink);border-top-color:transparent}
+@keyframes spin{to{transform:rotate(360deg)}}
+.iconbtn{border:0;background:none;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;color:var(--muted);flex:none}
+.iconbtn:hover{background:var(--sunk);color:var(--ink)}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.875rem;color:var(--muted);min-width:0}
+label.f>span.hint{font-size:.8rem}
+input.in,select.in,textarea.in{width:100%;min-height:44px;padding:8px 10px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:1rem}
+textarea.in{min-height:72px;resize:vertical}
+input.in:focus,select.in:focus,textarea.in:focus{outline:2px solid var(--teal);outline-offset:0;border-color:var(--teal)}
+input.in.num,input.amt{font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:520px){.grid3{grid-template-columns:1fr 1fr}}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;align-items:center;gap:10px;min-width:0}
+.row.wrapx{flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips.wrapx{flex-wrap:wrap;overflow:visible}
+.chip{flex:none;min-height:36px;padding:4px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:.9rem;white-space:nowrap;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:var(--teal-ink);font-weight:600}
+.search{position:relative}
+.pick>.search{position:sticky;top:calc(8px - var(--vp));z-index:6;box-shadow:0 0 0 8px var(--paper)}
+.search svg{position:absolute;left:12px;top:11px;color:var(--muted)}
+.search input{padding-left:42px}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:.78rem;font-weight:600;white-space:nowrap;background:var(--sunk);color:var(--muted)}
+.tag.good{background:var(--good-soft);color:var(--good)} .tag.warn{background:var(--warn-soft);color:var(--warn)}
+.tag.bad{background:var(--bad-soft);color:var(--bad)} .tag.gold{background:var(--gold-soft);color:var(--gold)}
+.check{display:inline-flex;align-items:center;gap:8px;min-height:36px;font-size:.9rem;color:var(--ink);cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--teal);flex:none}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;flex:none}
+.seg button{border:0;background:var(--surface);min-width:44px;min-height:44px;padding:0 12px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--teal);color:var(--teal-ink)}
+.step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);flex:none}
+.step button{border:0;background:none;width:40px;height:42px;font-size:1.3rem;line-height:1;color:var(--teal)}
+.step input{width:44px;border:0;background:none;text-align:center;font-family:var(--display);font-weight:600;font-size:1.05rem;-moz-appearance:textfield;padding:0}
+.step input::-webkit-outer-spin-button,.step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+/* ---------- surfaces ---------- */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.panel>h3{margin-bottom:10px}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.item{display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;min-height:56px;color:var(--ink)}
+.item:last-child{border-bottom:0}
+button.item:hover{background:var(--sunk)}
+.item .t{font-weight:600;overflow-wrap:anywhere}
+.item .s{font-size:.85rem;color:var(--muted);overflow-wrap:anywhere}
+.item .amt{font-family:var(--display);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
+.note{border-radius:var(--r);padding:10px 14px;display:flex;gap:10px;align-items:flex-start;background:var(--sunk);font-size:.95rem}
+.note.fest{background:var(--gold-soft);border:1px solid var(--gold)}
+.note.warn{background:var(--warn-soft)} .note.bad{background:var(--bad-soft)}
+.note button{margin-left:auto;flex:none}
+.tablebox{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+table.t{border-collapse:collapse;width:100%;font-size:.93rem}
+table.t th{font-weight:600;color:var(--muted);text-align:left;font-size:.82rem;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.t td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t tr:last-child td{border-bottom:0}
+table.t td.n,table.t th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.t tfoot td{font-weight:700;border-top:2px solid var(--ink);border-bottom:0}
+.kv{display:grid;grid-template-columns:1fr auto;gap:6px 16px}
+.kv .n{font-variant-numeric:tabular-nums;text-align:right;font-weight:600}
+.kv .total{border-top:2px solid var(--ink);padding-top:6px;font-weight:700}
+
+/* ---------- home ---------- */
+.hero{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 28px}
+.hero .big{font-family:var(--display);font-weight:700;font-size:clamp(2.6rem,11vw,3.8rem);line-height:1;font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.stats>*{padding:10px 12px;border:0;border-left:1px solid var(--line);min-width:0;background:none;text-align:left;color:var(--ink)}
+.stats>*:first-child{border-left:0}
+.stats .v{font-family:var(--display);font-weight:600;font-size:1.25rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.stats .k{font-size:.8rem;color:var(--muted)}
+.cols{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+@media (min-width:900px){.cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.chart svg{display:block;width:100%;height:auto}
+.chart text{font-family:var(--body);font-size:11px;fill:var(--muted)}
+.bar{height:10px;border-radius:5px;background:var(--sunk);overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.9rem;margin-top:8px}
+.legend b{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+.meter{height:6px;border-radius:3px;background:var(--sunk);margin-top:4px}
+.meter i{display:block;height:100%;border-radius:3px;background:var(--teal)}
+
+/* ---------- sell ---------- */
+.sell{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+/* wide screens: the item list and the bill scroll on their own, and the bill's main button stays put under it */
+@media (min-width:900px){
+  .view.fit{overflow:hidden;padding-bottom:var(--vp)}
+  .view.fit>.wrap{height:100%;max-width:1200px}
+  .sell{grid-template-columns:minmax(0,1fr) minmax(360px,440px);grid-template-rows:minmax(0,1fr);flex:1;min-height:0;align-items:stretch;gap:24px}
+  .sell>.pick{overflow-y:auto;min-height:0;padding:0 12px 16px 2px;margin-right:-12px}
+  .sell>.pick>*,.sell #sellbody>*,.colbody>*{flex-shrink:0}
+  .sell>.pick>.search{top:0}
+  .sell .slipcol{display:flex;flex-direction:column;min-height:0}
+  .colbody{flex:1;min-height:0;overflow-y:auto;padding:2px 12px 18px;margin:0 -12px}
+  .colfoot{flex:none;padding-top:12px}
+  .sell>.pick .btn.quiet[data-act="oneOff"]{display:none}   /* the bill beside it already has this button */
+}
+@media (max-width:899px){.sell .slipcol{display:none}}
+.pick .item .stockno{font-size:.8rem}
+.billbar{position:sticky;bottom:-28px;margin:0 -16px -28px;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 18px rgba(19,35,31,.08)}
+/* the next thing to do on the bill: one big button that sits under the screen, always in the same place */
+.dock{flex:none;position:relative;z-index:2;padding:10px 16px;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 18px rgba(19,35,31,.08);animation:up .18s ease-out}
+.dock>*{max-width:640px;margin-inline:auto}
+@media (min-width:900px){.dock{display:none!important}}
+.slip{background:var(--slip);border:1px solid var(--line);border-radius:4px 4px 0 0;position:relative;padding:14px 14px 18px 26px;
+  background-image:linear-gradient(90deg,transparent 15px,var(--margin) 15px,var(--margin) 16px,transparent 16px);box-shadow:var(--lift)}
+.slip::after{content:"";position:absolute;left:-1px;right:-1px;bottom:-9px;height:9px;
+  background:linear-gradient(135deg,var(--slip) 6px,transparent 0) 0 0/12px 9px repeat-x,linear-gradient(225deg,var(--slip) 6px,transparent 0) 0 0/12px 9px repeat-x}
+.slip .shop{font-family:var(--display);font-weight:700;font-size:1.3rem;line-height:1.1}
+.slip .line{padding:10px 0;border-bottom:1px solid var(--rule)}
+.slip .line .nm{font-weight:600;overflow-wrap:anywhere}
+.slip .line .lhead{align-items:flex-start}
+.slip .line .nm{font-size:1.05rem}
+.slip .ltot{flex:none;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;font-size:1.15rem;white-space:nowrap}
+.slip .line .ctl{display:flex;align-items:flex-end;gap:12px;margin-top:8px}
+.slip .ctl .step button{width:46px;height:46px;font-size:1.5rem}
+.slip .ctl .step input{width:46px;font-size:1.15rem}
+.slip .price{max-width:170px;min-height:48px;font-size:1.1rem}
+.slip .line .lfoot{margin-top:6px}
+.slip .check input{width:24px;height:24px}
+.slipacts{display:grid;gap:8px;padding:12px 0 10px}
+.slipacts .btn{justify-content:flex-start;min-height:46px}
+.slip .sum{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:10px 0;border-bottom:1px solid var(--rule);font-variant-numeric:tabular-nums}
+.slip .grand{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0 6px}
+.slip .grand .num{font-size:2rem;font-weight:700;border-bottom:4px double var(--ink);padding-bottom:2px}
+.warnline{font-size:.82rem;color:var(--warn);margin-top:4px}
+.warnline.bad{color:var(--bad)}
+
+.two{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+@media (min-width:900px){.two{grid-template-columns:minmax(0,1fr) minmax(380px,460px)} .two .side{order:2;position:sticky;top:0}}
+/* ---------- sheets, toasts ---------- */
+.shade{position:fixed;inset:0;background:var(--shade);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.sheet{background:var(--paper);width:100%;max-width:600px;max-height:94%;border-radius:16px 16px 0 0;display:flex;flex-direction:column;box-shadow:var(--lift);animation:up .18s ease-out}
+.sheet.wide{max-width:760px}
+@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}
+.sheet>header{display:flex;align-items:center;gap:8px;padding:10px 8px 10px 16px;border-bottom:1px solid var(--line)}
+.sheet>header h2{flex:1;min-width:0}
+.sheet>.body{padding:16px;overflow-y:auto;flex:1;min-height:0;display:flex;flex-direction:column;gap:14px}
+.sheet>footer{padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:flex;gap:10px;background:var(--surface)}
+.sheet>footer .btn{flex:1}
+@media (min-width:700px){.shade{align-items:center}.sheet{border-radius:16px;max-height:90%}}
+.toasts{position:fixed;left:0;right:0;bottom:78px;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:80;pointer-events:none;padding:0 16px}
+.toast{background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:18px;font-weight:600;box-shadow:var(--lift);max-width:100%;text-align:center;animation:up .18s ease-out}
+.toast.bad{background:#B3261E;color:#fff}
+.toast.hint{background:var(--gold-soft);color:var(--ink);border:2px solid var(--gold)}
+
+/* ---------- new bill: three small steps on a phone (pick, check, pay); side by side on a wide screen ---------- */
+.wrap.narrow{max-width:640px}
+.ask{font-size:1.4rem;font-weight:700;line-height:1.2}
+.sec{font-size:.95rem;font-weight:600;color:var(--muted);margin-top:2px}
+.grp{font-size:1.35rem;font-weight:700}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:560px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.tile{display:flex;flex-direction:column;justify-content:center;gap:3px;min-height:78px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);text-align:left;box-shadow:0 1px 0 var(--line)}
+.tile .t{font-family:var(--display);font-weight:600;font-size:1.12rem;line-height:1.15;overflow-wrap:anywhere}
+.tile .s{font-size:.85rem;color:var(--muted)}
+.tile:hover,.tile:focus-visible{border-color:var(--teal)}
+.backrow{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;min-height:46px;padding:6px 16px 6px 10px;border-radius:999px;border:1px solid var(--line);
+  background:var(--surface);color:var(--teal);font-weight:600;font-size:1rem}
+.prow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);min-height:74px}
+.prow:last-child{border-bottom:0}
+.prow.on{background:var(--teal-soft)}
+.prow .grow{min-width:0}
+.prow .t{font-weight:600;font-size:1.06rem;overflow-wrap:anywhere}
+.prow .s{font-size:.9rem;color:var(--muted);margin-top:3px}
+.prow .sz{color:var(--ink);font-weight:600;font-size:1rem}
+.chips.bigchips .chip{min-height:46px;padding-inline:18px;font-size:1rem}
+.prow .pr{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none}
+.prow .amt{font-family:var(--display);font-weight:600;font-size:1.12rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.addbtn{min-width:98px;min-height:44px;border-radius:999px;border:2px solid var(--teal);background:var(--surface);color:var(--teal);font-weight:700;font-size:1rem}
+.qstep{display:inline-flex;align-items:center;min-width:98px;height:44px;border-radius:999px;background:var(--teal);color:var(--teal-ink);overflow:hidden}
+.qstep button{width:38px;height:44px;border:0;background:none;color:inherit;font-size:1.45rem;font-weight:700;line-height:1}
+.qstep b{flex:1;min-width:22px;text-align:center;font-family:var(--display);font-size:1.12rem}
+.seebtn{display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;min-height:58px;padding-inline:18px}
+.seebtn .r{display:inline-flex;align-items:center;gap:4px;font-family:var(--display);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.btn.rm{color:var(--muted);gap:4px;padding-inline:8px;flex:none;min-height:40px}
+.btn.rm svg.ic{width:18px;height:18px}
+.mini{display:flex;flex-direction:column;gap:3px;font-size:.8rem;color:var(--muted)}
+.amountbox{display:flex;flex-direction:column;align-items:center;gap:2px;padding:18px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);text-align:center}
+.amountbox .num{font-size:clamp(2.6rem,12vw,3.4rem);font-weight:700;line-height:1.05;font-variant-numeric:tabular-nums}
+.paytiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.paytile{display:flex;align-items:center;justify-content:center;gap:8px;min-height:64px;padding:8px 10px;border-radius:14px;border:2px solid var(--line);
+  background:var(--surface);color:var(--ink);font-weight:600;font-size:1.06rem}
+.paytile svg.ic{display:none}
+.paytile[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:var(--teal-ink)}
+.paytile[aria-pressed="true"] svg.ic{display:block}
+.paytiles.need .paytile{border-color:var(--warn);animation:nudge .5s ease-in-out 2}
+@keyframes nudge{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.check.big{min-height:54px;font-size:1rem;padding:8px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.done{align-items:center;text-align:center;padding-top:8px}
+.done .tick{width:84px;height:84px;border-radius:50%;background:var(--good-soft);color:var(--good);display:flex;align-items:center;justify-content:center}
+.done .tick svg.ic{width:46px;height:46px;stroke-width:2.6}
+.done h2{font-size:1.5rem}
+.done .num.big{font-size:clamp(2.4rem,11vw,3.2rem);font-weight:700;line-height:1}
+.done .panel{align-self:stretch;text-align:left}
+.done>.btn{align-self:stretch}
+
+/* ---------- dropdowns (drawn by the app, so they match on every device) ---------- */
+.dd{display:block;min-width:0}
+.ddbtn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;padding:8px 10px;border-radius:var(--r-sm);
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:1rem;text-align:left}
+.ddbtn .ddval{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ddbtn svg.ic{width:18px;height:18px;color:var(--muted)}
+.ddbtn:focus-visible,.ddbtn[aria-expanded="true"]{outline:2px solid var(--teal);outline-offset:0;border-color:var(--teal)}
+.ddshade{position:fixed;inset:0;z-index:70;background:var(--shade);display:flex;align-items:flex-end}
+.ddmenu{background:var(--surface);color:var(--ink);width:100%;max-height:72%;border-radius:16px 16px 0 0;box-shadow:var(--lift);display:flex;flex-direction:column;
+  overflow:hidden;padding-bottom:env(safe-area-inset-bottom,0px);animation:up .16s ease-out}
+.ddtitle{padding:14px 18px 6px;font-family:var(--display);font-weight:600;font-size:1.1rem}
+.ddtitle:empty{display:none}
+.ddlist{overflow-y:auto;min-height:0;padding:4px 6px 6px}
+.ddopt{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:46px;padding:8px 12px;border:0;background:none;color:var(--ink);
+  font-size:1rem;text-align:left;border-radius:var(--r-sm)}
+.ddopt:hover,.ddopt:focus-visible{background:var(--teal-soft);outline:none}
+.ddopt[aria-selected="true"]{font-weight:600;color:var(--teal)}
+.ddopt svg.ic{width:20px;height:20px}
+.ddadd{border-top:1px solid var(--line);padding:6px}
+.ddopt.addnew{justify-content:flex-start;color:var(--teal);font-weight:600}
+.ddnew{display:flex;gap:8px;padding:4px}
+.ddnew .in{flex:1;min-width:0}
+.ddshade.adding{align-items:flex-start}
+.ddshade.adding .ddlist{display:none}
+.ddshade.adding .ddadd{border-top:0}
+.ddshade.adding .ddmenu{border-radius:0 0 16px 16px;animation:none;padding-bottom:0;padding-top:env(safe-area-inset-top,0px)}
+@media (min-width:700px){
+  .ddshade{background:transparent;display:block}
+  .ddmenu,.ddshade.adding .ddmenu{position:fixed;width:auto;border-radius:12px;border:1px solid var(--line);animation:none;padding-bottom:0;padding-top:0}
+  .ddtitle{display:none}
+}
+.nav button,.rail button{position:relative}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex:none}
+.nav .dot{position:absolute;top:6px;left:calc(50% + 8px)}
+.rail .dot{margin-left:auto}
+
+/* ---------- sign in ---------- */
+.gate{flex:1;min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px 16px;overflow-y:auto}
+.installbar{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 16px;background:var(--gold-soft);color:var(--ink);border-bottom:1px solid var(--gold);font-size:.9rem}
+.installbar .grow{flex:1;min-width:0}
+.gate .card{width:100%;max-width:400px;display:flex;flex-direction:column;gap:16px}
+.gate .name{font-family:var(--display);font-weight:800;font-size:2.4rem;line-height:1;color:var(--teal)}
+.gate .border{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--gold) 0 62%,transparent 62% 66%,var(--gold) 66% 72%,transparent 72% 76%,var(--gold) 76% 79%,transparent 79%)}
+.pin{letter-spacing:.4em;text-align:center;font-family:var(--display);font-size:1.5rem;font-weight:600}
+.skel{height:14px;border-radius:7px;background:var(--sunk);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.5}}
+
+/* ---------- loading: a bar across the top for every trip to the sheet, and one where the answer will appear ---------- */
+.loadbar{position:fixed;left:0;right:0;top:0;z-index:95;pointer-events:none;opacity:0;transition:opacity .25s}
+.loadbar.on{opacity:1}
+.loadbar .track{height:7px;background:var(--teal-soft);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.loadbar .fill{display:block;height:100%;width:0;background:var(--gold);border-radius:0 4px 4px 0;transition:width .22s ease-out}
+.loadbar .label{position:absolute;top:13px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);font-size:.85rem;font-weight:600;
+  padding:4px 14px;border-radius:999px;box-shadow:var(--lift);white-space:nowrap}
+.loadbox{display:flex;flex-direction:column;align-items:center;gap:12px;padding:32px 16px;color:var(--muted);font-weight:600;text-align:center}
+.loadbox .lbbar{position:relative;width:min(340px,86%);height:12px;border-radius:6px;background:var(--sunk);border:1px solid var(--line);overflow:hidden}
+.loadbox .lbbar i{position:absolute;top:0;bottom:0;left:-45%;width:45%;border-radius:6px;background:var(--teal);animation:slide 1.15s ease-in-out infinite}
+@keyframes slide{from{left:-45%}to{left:100%}}
+.gate .loadbox{padding:8px 0;align-items:stretch;text-align:left}
+.gate .loadbox .lbbar{width:100%}
+.iconbtn.busy svg{animation:spin .7s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}
+  .loadbox .lbbar i{left:0;width:100%;opacity:.55}}
+</style>
+</head>
+<body>
+<div id="app"><div class="gate"><div class="card"><div><div class="name">ShivaKripa Mart</div></div><div class="border"></div><div class="loadbox" role="status"><span>Opening the shop…</span><div class="lbbar"><i></i></div></div></div></div></div>
+<div class="toasts" id="toasts"></div>
+<script>window.SKM_PWA = true; /* this copy is the installable one: it reaches the sheet through the shop link */</script>
+<script>
+/* ShivaKripa Mart shop app: the screens. Nothing in this file needs changing to run the shop;
+   every shop value comes from the Settings page of the app. */
+(function () {
+'use strict';
+/* ================= state ================= */
+var S = { token: '', user: null, settings: {}, lists: {}, products: [], bySku: {}, vendors: [], festivals: [],
+  today: '', tz: 'Asia/Kolkata', shopPin: false, sheetUrl: '', screen: 'sell', arg: null, dash: null, dashKey: '',
+  range: 'today', from: '', to: '', pick: { q: '', cat: '' }, bill: null, stockIn: null, itemsFilter: { q: '', cat: '', f: 'all' },
+  status: null };
+var A = {}, I = {}, F = {}, R = {}, sheets = [];
+var TITLES = { home: 'Dashboard', sell: 'New bill', stockin: 'Stock in', items: 'Items', more: 'More', paylater: 'Pay later',
+  orders: 'Custom orders', bills: 'Saved bills', reports: 'Reports', count: 'Stock count', vendors: 'Vendors', settings: 'Settings' };
+
+/* ================= small helpers ================= */
+function $(sel, root) { return (root || document).querySelector(sel); }
+function $all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+function esc(s) { return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} return null; }
+function num(v) { if (typeof v === 'number') return v; var s = String(v === null || v === undefined ? '' : v).replace(/[^0-9.\-]/g, ''); return (s === '' || s === '-' || s === '.') ? NaN : Number(s); }
+function n0(v) { var n = num(v); return isNaN(n) ? 0 : n; }
+function r2(n) { return Math.round((n + (n >= 0 ? 1e-9 : -1e-9)) * 100) / 100; }
+function cur() { return S.settings.CurrencySymbol || '₹'; }
+function money(n) {
+  if (n === null || n === undefined || n === '' || isNaN(n)) return '–';
+  var neg = n < 0, a = Math.abs(n), whole = Math.abs(a - Math.round(a)) < 0.005;
+  var s; try { s = a.toLocaleString('en-IN', { minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: whole ? 0 : 2 }); } catch (e) { s = whole ? String(Math.round(a)) : a.toFixed(2); }
+  return (neg ? '−' : '') + cur() + s;
+}
+function short(n) { var a = Math.abs(n); if (a >= 10000000) return r1(n / 10000000) + 'Cr'; if (a >= 100000) return r1(n / 100000) + 'L'; if (a >= 1000) return r1(n / 1000) + 'k'; return String(Math.round(n)); }
+function r1(n) { return String(Math.round(n * 10) / 10); }
+var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+function ymdParts(s) { var p = String(s).split('-'); return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])); }
+function toYmd(d) { return d.getUTCFullYear() + '-' + ('0' + (d.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + d.getUTCDate()).slice(-2); }
+function addDays(s, n) { var d = ymdParts(s); d.setUTCDate(d.getUTCDate() + n); return toYmd(d); }
+function dayDiff(a, b) { return Math.round((ymdParts(b) - ymdParts(a)) / 86400000); }
+function today() {
+  try { var t = new Intl.DateTimeFormat('en-CA', { timeZone: S.tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()); if (/^\d{4}-\d{2}-\d{2}$/.test(t)) return t; } catch (e) {}
+  return S.today || toYmd(new Date());
+}
+function dLong(s) { if (!s) return ''; var d = ymdParts(s); return d.getUTCDate() + ' ' + MON[d.getUTCMonth()] + ' ' + d.getUTCFullYear(); }
+function dShort(s) { if (!s) return ''; var d = ymdParts(s); return d.getUTCDate() + ' ' + MON[d.getUTCMonth()]; }
+function dDay(s) { if (!s) return ''; var d = ymdParts(s), t = today(); if (s === t) return 'Today'; if (s === addDays(t, -1)) return 'Yesterday'; return DOW[d.getUTCDay()] + ', ' + d.getUTCDate() + ' ' + MON[d.getUTCMonth()] + (s.slice(0, 4) !== t.slice(0, 4) ? ' ' + d.getUTCFullYear() : ''); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+function debounce(fn, ms) { var t; return function () { var a = arguments, me = this; clearTimeout(t); t = setTimeout(function () { fn.apply(me, a); }, ms); }; }
+
+/* ---------- items ---------- */
+function pname(p) { return p.item + (p.type ? ' ' + p.type : ''); }
+function psub(p) { var a = []; if (p.size) a.push(p.size); if (p.inch) a.push(p.inch + ' inch'); if (p.mat) a.push(p.mat); if (p.painted === 'Yes') a.push('Painted'); return a.join(', '); }
+function fullName(p) { var a = []; if (p.size) a.push(p.size); if (p.inch) a.push(p.inch + ' inch'); if (p.painted === 'Yes') a.push('Painted'); return pname(p) + (a.length ? ', ' + a.join(', ') : ''); }
+function roundUp(n) { var step = S.settings.RoundPricesTo || 1; return Math.ceil(n / step - 1e-9) * step; }
+function suggest(cost) { return cost > 0 ? roundUp(cost * (1 + (S.settings.MinMarkupPercent || 0) / 100)) : null; }
+function minPrice(cost) { return cost > 0 ? r2(cost * (1 + (S.settings.MinMarkupPercent || 0) / 100)) : null; }
+function sellPrice(p) { return p.price !== null && p.price !== undefined ? p.price : suggest(p.cost); }
+function level(p) { return p.reorder !== null && p.reorder !== undefined ? p.reorder : (S.settings.DefaultReorderLevel || 0); }
+function isLow(p) { return p.active && p.stock !== null && p.stock <= level(p); }
+function stockTag(p) {
+  if (p.stock === null || p.stock === undefined) return '<span class="tag">Not counted</span>';
+  if (p.stock < 0) return '<span class="tag bad">' + p.stock + ' check count</span>';
+  if (p.stock === 0) return '<span class="tag bad">None left</span>';
+  if (p.stock <= level(p)) return '<span class="tag warn">' + p.stock + ' left</span>';
+  return '<span class="tag good">' + p.stock + ' in stock</span>';
+}
+function setProducts(list) { S.products = list; S.bySku = {}; list.forEach(function (p) { S.bySku[p.sku] = p; }); }
+function mergeProducts(list) {
+  (list || []).forEach(function (p) { var i = -1; for (var k = 0; k < S.products.length; k++) if (S.products[k].sku === p.sku) { i = k; break; } if (i >= 0) S.products[i] = p; else S.products.push(p); S.bySku[p.sku] = p; });
+}
+function findItems(q, cat, all) {
+  var words = String(q || '').toLowerCase().split(/\s+/).filter(Boolean);
+  return S.products.filter(function (p) {
+    if (!all && !p.active) return false;
+    if (cat && p.cat !== cat) return false;
+    if (!words.length) return true;
+    var hay = (p.sku + ' ' + p.cat + ' ' + fullName(p) + ' ' + p.mat + ' ' + p.vendor + (p.inch ? ' ' + p.inch + 'in ' + p.inch + '"' : '')).toLowerCase();
+    for (var i = 0; i < words.length; i++) if (hay.indexOf(words[i]) < 0) return false;
+    return true;
+  });
+}
+function catsInUse() { var seen = {}, out = []; (S.lists.Category || []).forEach(function (c) { seen[c] = 1; out.push(c); }); S.products.forEach(function (p) { if (p.cat && !seen[p.cat]) { seen[p.cat] = 1; out.push(p.cat); } }); return out; }
+
+/* ================= icons ================= */
+var IC = {
+  home: '<path d="M4 18a8 8 0 1116 0"/><path d="M12 18l4.5-6"/><path d="M3 18h18"/>', down: '<path d="M6 9l6 6 6-6"/>', check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  sell: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
+  stockin: '<path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/>',
+  items: '<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/>',
+  more: '<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>',
+  paylater: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/>',
+  orders: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4v3h6V4M9 12h6M9 16h4"/>',
+  bills: '<path d="M7 3h10v18H7z"/><path d="M10 8h4M10 12h4M10 16h2"/>',
+  reports: '<path d="M4 20V4M4 20h16"/><path d="M8 16v-5M12 16V8M16 16v-8"/>',
+  count: '<path d="M5 6h14M5 12h14M5 18h8"/><path d="M16 17l2 2 3-4"/>',
+  vendors: '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><path d="M16 6a3 3 0 010 5M18 15c2 1 3 3 3 5"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>',
+  out: '<path d="M14 4h5v16h-5"/><path d="M10 8l-4 4 4 4M6 12h9"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>', plus: '<path d="M12 5v14M5 12h14"/>', search: '<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/>',
+  back: '<path d="M14 6l-6 6 6 6"/>', next: '<path d="M10 6l6 6-6 6"/>', refresh: '<path d="M20 6v5h-5"/><path d="M20 11a8 8 0 10-2 6"/>',
+  bell: '<path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 20h4"/>', trash: '<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/>',
+  tag: '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/>',
+  edit: '<path d="M4 20h4l10-10-4-4L4 16z"/><path d="M13 7l4 4"/>', brush: '<path d="M14 4l6 6-8 8-6-6z"/><path d="M6 12c-3 2-2 6-3 8 3 0 6 0 8-3"/>',
+  alert: '<path d="M12 4l9 16H3z"/><path d="M12 10v5M12 18v.5"/>', phone: '<path d="M6 3h4l1 5-2 1a12 12 0 006 6l1-2 5 1v4c0 1-1 2-2 2A17 17 0 014 5c0-1 1-2 2-2z"/>'
+};
+function ic(n) { return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + (IC[n] || '') + '</svg>'; }
+
+/* ================= talking to the sheet ================= */
+/* Inside Google Apps Script the screens talk to the sheet with google.script.run.
+   The installed copy (hosted on GitHub, added to a home screen) has no such thing, so it posts to the
+   shop link instead: the Apps Script web app address, saved once on each device. */
+var PWA = !!window.SKM_PWA, installEvt = null;
+function shopLink() { return store('skm_api') || ''; }
+function reply(text, resolve, reject) {
+  var r; try { r = JSON.parse(text); } catch (e) { return reject(new Error('The sheet sent an answer the app could not read. Try again.')); }
+  if (r.ok) return resolve(r.data);
+  var err = new Error(r.error || 'Something went wrong.'); err.code = r.code;
+  if (r.code === 'AUTH') { S.token = ''; store('skm_token', null); showGate(); }
+  reject(err);
+}
+function send(name, payload, link) {
+  return new Promise(function (resolve, reject) {
+    var lost = function () { reject(new Error('No answer from the sheet. Check the internet and try again.')); };
+    if (!PWA) {
+      google.script.run.withSuccessHandler(function (text) { reply(text, resolve, reject); }).withFailureHandler(lost).api(name, S.token, JSON.stringify(payload || {}));
+      return;
+    }
+    var url = link || shopLink();
+    if (!url) return reject(new Error('This device is not connected to the shop yet.'));
+    fetch(url, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ name: name, token: S.token, payload: payload || {} }) })
+      .then(function (res) { if (!res.ok) throw new Error('http ' + res.status); return res.text(); })
+      .then(function (text) { reply(text, resolve, reject); }, lost);
+  });
+}
+/* ================= loading bar =================
+   Every trip to the sheet shows a bar across the top of the screen with the word Loading or Saving.
+   The bar fills while the app waits and runs to the end when the answer arrives. */
+var UI_VERSION = '3.4';
+var loadN = 0, saveN = 0, loadP = 0, loadT = null, loadHide = null;
+var SAVES = /^(save|cancel|receive|stockCount|adjust|orderStatus|changePins|signOutAll|firstSetup)/;
+function loadEl() {
+  var el = $('#loadbar');
+  if (!el) {
+    el = document.createElement('div'); el.id = 'loadbar'; el.className = 'loadbar'; el.setAttribute('role', 'status'); el.setAttribute('aria-live', 'polite');
+    el.innerHTML = '<div class="track"><i class="fill"></i></div><span class="label"></span>';
+    document.body.appendChild(el);
+  }
+  return el;
+}
+function loadPaint() { var el = loadEl(); $('.fill', el).style.width = loadP + '%'; $('.label', el).textContent = saveN ? 'Saving…' : 'Loading…'; }
+function loadStart(name) {
+  loadN++; if (SAVES.test(name)) saveN++;
+  clearTimeout(loadHide);
+  if (loadN === 1) {
+    loadP = 12; loadEl().className = 'loadbar on';
+    clearInterval(loadT); loadT = setInterval(function () { loadP += (94 - loadP) * 0.07; loadPaint(); }, 200);
+  }
+  loadPaint();
+}
+function loadEnd(name) {
+  loadN = Math.max(0, loadN - 1); if (SAVES.test(name)) saveN = Math.max(0, saveN - 1);
+  if (loadN) return loadPaint();
+  clearInterval(loadT); loadT = null; loadP = 100; $('.fill', loadEl()).style.width = '100%';
+  loadHide = setTimeout(function () { if (loadN) return; loadEl().className = 'loadbar'; loadP = 0; setTimeout(function () { if (!loadN) $('.fill', loadEl()).style.width = '0'; }, 300); }, 350);
+}
+/** A loading bar to put where the answer will appear. */
+function loadBox(text) { return '<div class="loadbox" role="status"><span>' + esc(text || 'Loading…') + '</span><div class="lbbar"><i></i></div></div>'; }
+function call(name, payload, link) {
+  loadStart(name);
+  var p = send(name, payload, link), done = function () { loadEnd(name); };
+  p.then(done, done);
+  return p;
+}
+/** Runs a save from a button: shows it busy, shows any error. */
+function run(btn, fn) {
+  if (btn && btn.disabled) return Promise.resolve();
+  if (btn) { btn.disabled = true; btn.classList.add('busy'); }
+  var p; try { p = Promise.resolve(fn()); } catch (e) { p = Promise.reject(e); }
+  return p.catch(function (e) { toast(e && e.message ? e.message : String(e), true); })
+    .then(function (v) { if (btn) { btn.disabled = false; btn.classList.remove('busy'); } return v; });
+}
+
+/* ================= toasts, sheets, confirm ================= */
+/* A short message. It sits just above the main button of the moment, so it never covers the button. */
+function toastSpot() {
+  var el = null, sh = topSheet(), pick = function (x) { return x && !x.hidden && x.offsetHeight ? x : null; };
+  if (sh) el = pick($('footer', sh));
+  el = el || pick($('#dock')) || pick($('#billhost .colfoot')) || pick($('.nav'));
+  return (el ? Math.max(0, window.innerHeight - el.getBoundingClientRect().top) : 12) + 10;
+}
+function toast(msg, bad) {
+  var box = $('#toasts'), el = document.createElement('div');
+  box.style.bottom = toastSpot() + 'px';
+  /* bad = true: something went wrong. bad = 'hint': a reminder of what is still needed. */
+  el.className = 'toast' + (bad === 'hint' ? ' hint' : (bad ? ' bad' : '')); el.setAttribute('role', bad ? 'alert' : 'status'); el.textContent = msg;
+  $all('.toast', box).forEach(function (t) { if (t.textContent === msg) box.removeChild(t); });   /* the same message twice shows once */
+  while (box.children.length > 2) box.removeChild(box.firstChild);
+  box.appendChild(el);
+  setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, bad === 'hint' ? 4500 : (bad ? 6000 : 2800));
+}
+function sheet(o) {
+  var wrap = document.createElement('div');
+  wrap.className = 'shade';
+  wrap.innerHTML = '<div class="sheet' + (o.wide ? ' wide' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(o.title) + '"><header><h2>' + esc(o.title) + '</h2>' +
+    '<button class="iconbtn" data-act="closeSheet" aria-label="Close">' + ic('x') + '</button></header>' +
+    (o.form ? '<form class="body" data-form="' + o.form + '" novalidate>' + o.body + '<button type="submit" hidden></button></form>' : '<div class="body">' + o.body + '</div>') +
+    (o.foot ? '<footer>' + o.foot + '</footer>' : '') + '</div>';
+  wrap.addEventListener('mousedown', function (e) { if (e.target === wrap) closeSheet(); });
+  document.body.appendChild(wrap);
+  sheets.push({ el: wrap, onClose: o.onClose });
+  var first = $('[autofocus]', wrap); if (first && isWide()) first.focus();
+  return wrap;
+}
+function closeSheet() { var s = sheets.pop(); if (!s) return; s.el.parentNode.removeChild(s.el); if (s.onClose) s.onClose(); }
+function closeAllSheets() { while (sheets.length) closeSheet(); }
+function topSheet() { return sheets.length ? sheets[sheets.length - 1].el : null; }
+A.closeSheet = function () { closeSheet(); };
+function confirmBox(title, text, okLabel, danger) {
+  return new Promise(function (resolve) {
+    var answered = false;
+    sheet({ title: title, body: '<p>' + esc(text) + '</p>',
+      foot: '<button class="btn" data-act="confirmNo">Keep it</button><button class="btn ' + (danger ? 'danger' : 'primary') + '" data-act="confirmYes">' + esc(okLabel) + '</button>',
+      onClose: function () { if (!answered) resolve(false); } });
+    A.confirmYes = function () { answered = true; closeSheet(); resolve(true); };
+    A.confirmNo = function () { closeSheet(); };
+  });
+}
+
+/* ================= form bits ================= */
+function fld(label, control, hint) { return '<label class="f">' + esc(label) + control + (hint ? '<span class="hint">' + esc(hint) + '</span>' : '') + '</label>'; }
+function inp(id, val, attrs) { return '<input class="in" id="' + id + '" name="' + id + '" value="' + esc(val === null || val === undefined ? '' : val) + '" ' + (attrs || '') + '>'; }
+function numIn(id, val, attrs) { return '<input class="in num" id="' + id + '" name="' + id + '" type="number" inputmode="decimal" step="any" min="0" value="' + esc(val === null || val === undefined ? '' : val) + '" ' + (attrs || '') + '>'; }
+/* A dropdown drawn by the app itself, so it looks the same on every phone and computer.
+   The chosen value sits in a hidden input with the given id, so val(id) reads it like any other field.
+   add = a word such as 'category' puts an "Add a new category" row at the bottom of the list. */
+var DDS = {}, ddNow = null;
+function sel(id, options, val, attrs, blank, add) {
+  var o = options.slice(); val = (val === null || val === undefined) ? '' : String(val);
+  if (val && o.indexOf(val) < 0) o.push(val);
+  var value = val || (blank !== undefined ? '' : (o[0] || ''));
+  DDS[id] = { options: o, blank: blank, add: add || '' };
+  return '<span class="dd"><input type="hidden" id="' + id + '" name="' + id + '" value="' + esc(value) + '" ' + (attrs || '') + '>' +
+    '<button type="button" class="in ddbtn" id="' + id + '-btn" data-act="ddOpen" data-id="' + id + '" aria-haspopup="listbox" aria-expanded="false">' +
+    '<span class="ddval' + (value === '' ? ' muted' : '') + '">' + esc(value === '' ? (blank || '') : value) + '</span>' + ic('down') + '</button></span>';
+}
+function ddClose() {
+  if (!ddNow) return;
+  var b = $('#' + ddNow.id + '-btn'); if (b) b.setAttribute('aria-expanded', 'false');
+  if (ddNow.el.parentNode) ddNow.el.parentNode.removeChild(ddNow.el);
+  ddNow = null;
+  if (b) b.focus();
+}
+function ddSet(id, v) {
+  var input = $('#' + id), btn = $('#' + id + '-btn'), d = DDS[id]; if (!input || !btn || !d) return;
+  input.value = v;
+  var lab = $('.ddval', btn); lab.textContent = v === '' ? (d.blank || '') : v; lab.className = 'ddval' + (v === '' ? ' muted' : '');
+  var ev; try { ev = new Event('input', { bubbles: true }); } catch (e) { ev = document.createEvent('Event'); ev.initEvent('input', true, true); }
+  input.dispatchEvent(ev);
+}
+A.ddOpen = function (btn) {
+  var id = btn.getAttribute('data-id'), d = DDS[id], input = $('#' + id); if (!d || !input) return;
+  ddClose();
+  var cur = input.value, lab = btn.closest('label.f'), title = lab && lab.firstChild && lab.firstChild.nodeType === 3 ? lab.firstChild.textContent : '';
+  var rows = (d.blank !== undefined && !/^Choose/.test(d.blank) ? [['', d.blank]] : []).concat(d.options.map(function (x) { return [x, x]; }));
+  var wrap = document.createElement('div'); wrap.className = 'ddshade'; wrap.setAttribute('data-act', 'ddClose');
+  wrap.innerHTML = '<div class="ddmenu" data-act="ddNoop" role="listbox" aria-label="' + esc(title) + '"><div class="ddtitle">' + esc(title) + '</div><div class="ddlist">' +
+    rows.map(function (r) { var on = r[0] === cur; return '<button type="button" class="ddopt" role="option" aria-selected="' + on + '" data-act="ddPick" data-v="' + esc(r[0]) + '"><span>' + esc(r[1]) + '</span>' + (on ? ic('check') : '') + '</button>'; }).join('') +
+    (rows.length ? '' : '<div class="empty small">Nothing in this list yet.</div>') + '</div>' +
+    (d.add ? '<div class="ddadd" id="ddaddbox"><button type="button" class="ddopt addnew" data-act="ddAdd">' + ic('plus') + '<span>Add a new ' + esc(d.add) + '</span></button></div>' : '') + '</div>';
+  document.body.appendChild(wrap);
+  ddNow = { id: id, el: wrap };
+  btn.setAttribute('aria-expanded', 'true');
+  var menu = $('.ddmenu', wrap);
+  if (window.matchMedia('(min-width:700px)').matches) {
+    var r = btn.getBoundingClientRect(), vh = window.innerHeight, below = vh - r.bottom - 12, above = r.top - 12, w = Math.max(r.width, 230);
+    var up = below < Math.min(menu.offsetHeight, 240) && above > below;
+    menu.style.maxHeight = Math.max(150, Math.min(380, up ? above : below)) + 'px';
+    menu.style.width = w + 'px';
+    menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + 'px';
+    if (up) menu.style.bottom = (vh - r.top + 4) + 'px'; else menu.style.top = (r.bottom + 4) + 'px';
+  }
+  var first = $('.ddopt[aria-selected="true"]', wrap) || $('.ddopt', wrap);
+  if (first) { first.focus(); if (first.scrollIntoView) first.scrollIntoView({ block: 'nearest' }); }
+};
+A.ddNoop = function () {};
+A.ddClose = function () { ddClose(); };
+A.ddPick = function (el) { if (!ddNow) return; var id = ddNow.id, v = el.getAttribute('data-v'); ddClose(); ddSet(id, v); };
+A.ddAdd = function () {
+  if (!ddNow) return;
+  var d = DDS[ddNow.id];
+  ddNow.el.className = 'ddshade adding';
+  $('#ddaddbox').innerHTML = '<div class="ddnew"><input class="in" id="ddnew" placeholder="Type the new ' + esc(d.add) + '" autocomplete="off" maxlength="60" aria-label="New ' + esc(d.add) + '"><button type="button" class="btn primary" data-act="ddAddOk">Add</button></div>';
+  $('#ddnew').focus();
+};
+A.ddAddOk = function () {
+  if (!ddNow) return;
+  var e = $('#ddnew'), v = e ? e.value.trim() : '', id = ddNow.id, d = DDS[id];
+  if (!v) { if (e) e.focus(); return; }
+  var hit = ''; d.options.forEach(function (x) { if (x.toLowerCase() === v.toLowerCase()) hit = x; });
+  if (hit) v = hit; else d.options.push(v);
+  ddClose(); ddSet(id, v);
+};
+function chipRow(act, options, val, extra) {
+  return '<div class="chips ' + (extra || '') + '">' + options.map(function (o) { var v = typeof o === 'string' ? o : o[0], t = typeof o === 'string' ? o : o[1]; return '<button type="button" class="chip" data-act="' + act + '" data-v="' + esc(v) + '" aria-pressed="' + (v === val) + '">' + esc(t) + '</button>'; }).join('') + '</div>';
+}
+function val(id, root) { var e = $('#' + id, root || document); return e ? e.value.trim() : ''; }
+function tableHtml(cols, rows, foot) {
+  if (!rows.length) return '';
+  return '<div class="tablebox"><table class="t"><thead><tr>' + cols.map(function (c) { return '<th' + (c.n ? ' class="n"' : '') + '>' + esc(c.t) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+    rows.map(function (r) { return '<tr>' + cols.map(function (c, i) { return '<td' + (c.n ? ' class="n"' : '') + '>' + r[i] + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody>' +
+    (foot ? '<tfoot><tr>' + cols.map(function (c, i) { return '<td' + (c.n ? ' class="n"' : '') + '>' + (foot[i] || '') + '</td>'; }).join('') + '</tr></tfoot>' : '') + '</table></div>';
+}
+
+/* ================= events ================= */
+document.addEventListener('click', function (e) {
+  var el = e.target.closest ? e.target.closest('[data-act]') : null;
+  if (!el || el.disabled) return;
+  var fn = A[el.getAttribute('data-act')];
+  if (fn) fn(el, e);
+});
+function onField(e) { var el = e.target; if (!el.getAttribute) return; var k = el.getAttribute('data-in'); if (k && I[k]) I[k](el, e); }
+document.addEventListener('input', onField);
+document.addEventListener('change', function (e) { if (e.target.tagName === 'SELECT' || e.target.type === 'checkbox' || e.target.type === 'date') onField(e); });
+document.addEventListener('submit', function (e) { e.preventDefault(); var k = e.target.getAttribute('data-form'); if (k && F[k]) F[k](e.target); });
+document.addEventListener('keydown', function (e) {
+  if (ddNow) {
+    if (e.key === 'Escape') { ddClose(); return; }
+    if (e.key === 'Enter' && e.target.id === 'ddnew') { e.preventDefault(); A.ddAddOk(); return; }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      var opts = $all('.ddopt', ddNow.el), i = opts.indexOf(document.activeElement), n = e.key === 'ArrowDown' ? Math.min(opts.length - 1, i + 1) : Math.max(0, i - 1);
+      if (opts[n]) opts[n].focus();
+      e.preventDefault();
+    }
+    return;
+  }
+  if (e.key === 'Escape' && sheets.length) closeSheet();
+});
+
+/* ================= the phone's Back button =================
+   Back goes one step back inside the app (close a list or a box, payment -> bill -> items, a screen -> Billing)
+   instead of closing the app in the middle of a bill. On the first screen, a second Back closes the app.
+   Browsers only honour history entries made while the person is tapping, so a few are laid down on each tap. */
+var BACKS = 6, backs = 0, unwinding = false;
+function armBack() { try { while (backs < BACKS) { history.pushState({ skm: backs + 1 }, ''); backs++; } } catch (e) {} }
+['click', 'keydown'].forEach(function (ev) { document.addEventListener(ev, armBack, true); });
+function backOne() {
+  if (ddNow) { ddClose(); return true; }
+  if (sheets.length) { closeSheet(); return true; }
+  if (!S.user || !$('#view')) return false;
+  if (S.screen === 'sell') return sellBack();
+  go(SUB[S.screen] && !window.matchMedia('(min-width:900px)').matches ? 'more' : 'sell');
+  return true;
+}
+window.addEventListener('popstate', function (e) {
+  var pos = e.state && e.state.skm ? e.state.skm : 0;
+  if (unwinding) { unwinding = false; backs = pos; return; }
+  if (pos >= backs) { backs = pos; return; }   /* Forward was pressed: nothing to undo */
+  backs = pos;
+  if (backOne()) return;
+  if (backs > 0) { unwinding = true; try { history.go(-backs); } catch (e2) { unwinding = false; } }
+  toast('Press Back again to leave the app');
+});
+
+/* ================= installed copy: connect a device, offer to install ================= */
+function cleanLink(v) { var m = /https:\/\/script\.google\.com\/(?:a\/[^\/\s]+\/)?macros\/s\/[A-Za-z0-9_\-]+\/exec/.exec(String(v || '')); return m ? m[0] : ''; }
+/* A set-up link ends in  #shop=<the shop link>. Opening it once saves the shop link on the device. */
+function takeLinkFromAddress() {
+  var m = /[#&]shop=([^&]+)/.exec(location.hash || '');
+  if (!m) return;
+  var link = ''; try { link = cleanLink(decodeURIComponent(m[1])); } catch (e) {}
+  if (link) store('skm_api', link);
+  try { history.replaceState(null, '', location.pathname + location.search); } catch (e2) {}
+}
+function setupLink() { return location.origin + location.pathname + '#shop=' + encodeURIComponent(shopLink()); }
+function showConnect() {
+  closeAllSheets();
+  $('#app').innerHTML = '<div class="gate"><form class="card" data-form="connect" novalidate><div><div class="name">ShivaKripa Mart</div></div><div class="border"></div>' +
+    '<h2>Connect this device to the shop</h2><p class="muted">Paste the shop link below. This is needed only once on each phone, tablet or computer. The shop owner has the link.</p>' +
+    fld('Shop link', '<input class="in" id="c-link" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec">') +
+    '<button class="btn primary big" type="submit">Connect</button></form></div>';
+}
+F.connect = function (form) {
+  var link = cleanLink(val('c-link'));
+  if (!link) return toast('That is not the shop link. It starts with https://script.google.com/macros/s/ and ends with /exec', true);
+  run($('button[type=submit]', form), function () { return call('status', {}, link).then(function () { store('skm_api', link); start(); }); });
+};
+A.disconnect = function () {
+  confirmBox('Disconnect this device?', 'The app on this device will ask for the shop link again. Nothing in the shop sheet changes.', 'Disconnect', true).then(function (ok) {
+    if (!ok) return;
+    store('skm_api', null); store('skm_token', null); S.user = null; S.token = ''; showConnect();
+  });
+};
+A.changeLink = function () { store('skm_api', null); showConnect(); };
+function copyText(text, el) {
+  var done = function () { toast('Copied'); }, old = function () { if (el && el.select) { el.select(); try { document.execCommand('copy'); done(); } catch (e) { toast('Press and hold the link to copy it.', true); } } };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, old); else old();
+}
+A.copySetup = function () { copyText(setupLink(), $('#setuplink')); };
+A.shareSetup = function () {
+  var link = setupLink();
+  if (navigator.share) navigator.share({ title: 'ShivaKripa Mart app', text: 'Open this link once to set up the shop app, then tap Install.', url: link }).catch(function () {});
+  else copyText(link, $('#setuplink'));
+};
+function showInstall() {
+  if (!installEvt || $('#installbar')) return;
+  var bar = document.createElement('div'); bar.id = 'installbar'; bar.className = 'installbar';
+  bar.innerHTML = '<span class="grow">Put this app on the home screen of this device.</span><button class="btn primary sm" data-act="install">Install</button><button class="iconbtn" data-act="installNo" aria-label="Not now">' + ic('x') + '</button>';
+  document.body.insertBefore(bar, document.body.firstChild);
+}
+function hideInstall() { var b = $('#installbar'); if (b) b.parentNode.removeChild(b); }
+A.install = function () { if (!installEvt) return hideInstall(); var e = installEvt; installEvt = null; hideInstall(); e.prompt(); };
+A.installNo = function () { hideInstall(); };
+if (PWA) {
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installEvt = e; showInstall(); });
+  window.addEventListener('appinstalled', function () { installEvt = null; hideInstall(); toast('Installed. Open it from the home screen.'); });
+  if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+}
+
+/* ================= sign in ================= */
+function showGate() {
+  closeAllSheets();
+  var st = S.status;
+  if (!st) { $('#app').innerHTML = '<div class="gate"><div class="card"><div><div class="name">' + esc(store('skm_shop') || 'ShivaKripa Mart') + '</div></div><div class="border"></div>' + loadBox('Opening the shop…') + '</div></div>'; return; }
+  var names = (st.staff || []).slice(), saved = store('skm_name') || '';
+  if (!names.length) names = [st.shopName];
+  if (names.indexOf(saved) < 0) saved = names[0];
+  var head = '<div><div class="name">' + esc(st.shopName) + '</div><div class="muted">' + esc(st.place || '') + '</div></div><div class="border"></div>';
+  var who = '<div class="stack"><span class="small muted">Who is using the app?</span><input type="hidden" id="gname" value="' + esc(saved) + '">' + chipRow('gateName', names, saved, 'wrapx') + '</div>';
+  var body;
+  if (!st.setupDone) {
+    body = '<h2>Set up the app</h2><p class="muted">Create the admin PIN. It opens Settings and is needed to cancel bills. Keep it to yourself.</p>' + who +
+      fld('Admin PIN (4 to 8 digits)', '<input class="in pin" id="gadmin" type="password" inputmode="numeric" autocomplete="new-password" maxlength="8">') +
+      fld('Shop PIN for staff (optional)', '<input class="in pin" id="gshop" type="password" inputmode="numeric" autocomplete="new-password" maxlength="8">', 'Leave empty to let staff open the app without a PIN.') +
+      '<button class="btn primary big" type="submit">Create PIN and open</button>';
+  } else {
+    body = who + fld(st.shopPin ? 'PIN' : 'PIN (staff can leave this empty)', '<input class="in pin" id="gpin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="8" autofocus>') +
+      '<button class="btn primary big" type="submit">Sign in</button>';
+  }
+  $('#app').innerHTML = '<div class="gate"><form class="card" data-form="gate" novalidate>' + head + body + '</form></div>';
+}
+A.gateName = function (el) { $('#gname').value = el.getAttribute('data-v'); $all('[data-act="gateName"]').forEach(function (b) { b.setAttribute('aria-pressed', String(b === el)); }); };
+F.gate = function (form) {
+  var btn = $('button[type=submit]', form), name = val('gname');
+  run(btn, function () {
+    var p = S.status.setupDone ? call('login', { name: name, pin: val('gpin') }) : call('firstSetup', { name: name, adminPin: val('gadmin'), shopPin: val('gshop') });
+    return p.then(function (r) { S.token = r.token; store('skm_token', r.token); store('skm_name', name); return boot(); });
+  });
+};
+function boot() {
+  return call('boot').then(function (b) {
+    S.user = b.user; S.settings = b.settings; S.lists = b.lists; S.vendors = b.vendors; S.festivals = b.festivals;
+    S.today = b.today; S.tz = b.tz || S.tz; S.shopPin = b.shopPin; S.sheetUrl = b.sheetUrl; S.version = b.version;
+    setProducts(b.products); store('skm_shop', b.settings.ShopName);
+    if (!S.bill) S.bill = keptBill() || newBill();
+    if (!S.stockIn) S.stockIn = newStockIn();
+    frame(); go(S.screen || 'home');
+    if (SELL.kept) { SELL.kept = false; toast('The bill you started is still here.'); }
+  });
+}
+A.signOut = function () { S.token = ''; store('skm_token', null); S.user = null; S.screen = 'sell'; S.dash = null; S.dashKey = ''; S.bill = null; S.stockIn = null; closeAllSheets(); start(); };
+function start() {
+  var th = store('skm_theme'); if (th === 'dark' || th === 'light') document.documentElement.setAttribute('data-theme', th);
+  if (PWA) { takeLinkFromAddress(); if (!shopLink()) return showConnect(); }
+  /* With PIN sign-in off (the default) the app opens straight away. A saved token is used when there is one. */
+  S.token = store('skm_token') || window.SKM_TOKEN || ('open:' + (store('skm_name') || ''));
+  S.status = null; S.user = null; showGate();
+  boot().catch(function (err) {
+    S.user = null; S.token = '';
+    return call('status').then(function (st) { S.status = st; document.title = st.shopName; if (!st.requirePin) throw err; showGate(); });
+  }).catch(function (e) { $('#app').innerHTML = '<div class="gate"><div class="card"><h2>The app could not open</h2><p>' + esc(e.message) + '</p><button class="btn primary" data-act="reload">Try again</button>' + (PWA ? '<button class="btn" data-act="changeLink">Use a different shop link</button>' : '') + '</div></div>'; });
+}
+A.reload = function () { start(); };
+
+/* ================= frame and moving between screens ================= */
+var NAV = [['sell', 'Billing'], ['stockin', 'Stock in'], ['items', 'Items'], ['home', 'Dashboard'], ['more', 'More']];
+var RAIL = [['sell', 'Billing'], ['stockin', 'Stock in'], ['items', 'Items'], ['home', 'Dashboard'], null, ['paylater', 'Pay later'], ['orders', 'Custom orders'], ['bills', 'Saved bills'], ['reports', 'Reports'], ['count', 'Stock count'], ['vendors', 'Vendors']];
+function frame() {
+  var dot = upcomingFestivals().length ? '<i class="dot" title="A festival is coming up"></i>' : '';
+  var rail = '<nav class="rail" aria-label="Main"><div class="brand">' + esc(S.settings.ShopName) + '</div><div class="place">' + esc(S.settings.LocationName || '') + '</div>' +
+    RAIL.map(function (n) { return n ? '<button data-act="go" data-v="' + n[0] + '">' + ic(n[0]) + esc(n[1]) + (n[0] === 'home' ? dot : '') + '</button>' : '<hr>'; }).join('') +
+    '<div class="spacer"></div>' + (S.user.role === 'admin' ? '<button data-act="go" data-v="settings">' + ic('settings') + 'Settings</button>' : '') +
+    (S.user.open ? '' : '<button data-act="signOut">' + ic('out') + 'Sign out</button>') + '</nav>';
+  var nav = '<nav class="nav" aria-label="Main">' + NAV.map(function (n) { return '<button data-act="go" data-v="' + n[0] + '"' + (n[0] === 'sell' ? ' class="sellnav"' : '') + '>' + ic(n[0]) + (n[0] === 'home' ? dot : '') + '<span>' + n[1] + '</span></button>'; }).join('') + '</nav>';
+  $('#app').innerHTML = rail + '<div class="main"><div class="top"><button class="iconbtn" id="backbtn" data-act="go" data-v="more" aria-label="Back" hidden>' + ic('back') + '</button><h1 id="title"></h1>' + (S.user.open ? '' : '<span class="who">' + esc(S.user.name) + (S.user.role === 'admin' ? ' (admin)' : '') + '</span>') +
+    '<button class="iconbtn" data-act="refresh" aria-label="Refresh">' + ic('refresh') + '</button></div><main class="view" id="view"></main><div class="dock" id="dock" hidden></div>' + nav + '</div>';
+  document.title = S.settings.ShopName;
+}
+var SUB = { paylater: 1, orders: 1, bills: 1, reports: 1, count: 1, vendors: 1, settings: 1 };
+function go(screen, arg) {
+  if (!R[screen]) screen = 'sell';
+  if (screen === 'settings' && S.user.role !== 'admin') screen = 'sell';
+  ddClose();
+  if (S.screen === 'sell' && screen !== 'sell') SELL.done = null;
+  var bb = $('#backbtn'); bb.setAttribute('data-act', 'go'); bb.setAttribute('data-v', 'more');
+  S.screen = screen; S.arg = arg || null;
+  $('#title').textContent = TITLES[screen] || '';
+  $('#backbtn').hidden = !SUB[screen] || window.matchMedia('(min-width:900px)').matches;
+  $all('.rail [data-v], .nav [data-v]').forEach(function (b) {
+    var v = b.getAttribute('data-v'), on = v === screen || (v === 'more' && SUB[screen] && b.closest('.nav'));
+    if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
+  var view = $('#view'), dock = $('#dock'); view.className = 'view'; view.scrollTop = 0; dock.hidden = true; dock.innerHTML = '';
+  R[screen](view);
+}
+A.go = function (el) {
+  var v = el.getAttribute('data-v');
+  if (v === 'sell' && S.screen === 'sell' && SELL.done) { SELL.done = null; SELL.step = 'pick'; }   /* Billing tapped on the "Bill saved" screen: start the next bill */
+  go(v, el.getAttribute('data-arg'));
+};
+/* a tablet turned on its side, or a window made wider or narrower: the bill screen is laid out again */
+(function () {
+  var mq = window.matchMedia('(min-width:900px)');
+  var turned = function () {
+    if (!S.user || !$('#view')) return;
+    if (S.screen === 'sell') R.sell($('#view')); else $('#backbtn').hidden = !SUB[S.screen] || mq.matches;
+  };
+  if (mq.addEventListener) mq.addEventListener('change', turned); else if (mq.addListener) mq.addListener(turned);
+})();
+A.refresh = function (el) {
+  run(el, function () { return call('products').then(function (r) { setProducts(r.products); S.dash = null; S.dashKey = ''; go(S.screen, S.arg); toast('Up to date'); }); });
+};
+R.more = function (view) {
+  var rows = [['paylater', 'Pay later', 'Money customers still owe'], ['orders', 'Custom orders', 'Bulk and special orders'], ['bills', 'Saved bills', 'Look up or cancel a saved bill'],
+    ['reports', 'Reports', 'Profit, items sold, what to buy, slow items'], ['count', 'Stock count', 'Type in what is on the shelves'], ['vendors', 'Vendors', 'People you buy from']];
+  if (S.user.role === 'admin') rows.push(['settings', 'Settings', 'Prices, lists, festivals, PINs']);
+  view.innerHTML = '<div class="wrap"><div class="list">' + rows.map(function (r) { return '<button class="item" data-act="go" data-v="' + r[0] + '">' + ic(r[0]) + '<span class="grow"><span class="t">' + r[1] + '</span><br><span class="s">' + r[2] + '</span></span>' + ic('next') + '</button>'; }).join('') +
+    '</div>' + (S.user.open ? '' : '<button class="btn" data-act="signOut">' + ic('out') + 'Sign out</button>') + '</div>';
+};
+
+/* ================= home ================= */
+var RANGES = [['today', 'Today'], ['7', '7 days'], ['30', '30 days'], ['month', 'This month'], ['90', '3 months'], ['180', '6 months'], ['year', 'This year'], ['custom', 'Custom']];
+function rangeDates() {
+  var t = today();
+  switch (S.range) {
+    case 'today': return [t, t];
+    case '7': return [addDays(t, -6), t];
+    case '30': return [addDays(t, -29), t];
+    case 'month': return [t.slice(0, 8) + '01', t];
+    case '90': return [addDays(t, -89), t];
+    case '180': return [addDays(t, -179), t];
+    case 'year': return [t.slice(0, 4) + '-01-01', t];
+    default: return [S.from || t, S.to || t];
+  }
+}
+function rangeLabel() { var d = rangeDates(); if (S.range === 'today') return 'today'; return d[0] === d[1] ? dLong(d[0]) : dShort(d[0]) + ' to ' + dLong(d[1]); }
+function loadDash(force) {
+  var d = rangeDates(), key = d.join('|');
+  if (!force && S.dash && S.dashKey === key) return Promise.resolve(S.dash);
+  return call('dash', { from: d[0], to: d[1] }).then(function (r) { S.dash = r; S.dashKey = key; return r; });
+}
+function rangeBar() {
+  var d = rangeDates();
+  return chipRow('range', RANGES, S.range) + (S.range === 'custom' ? '<div class="grid2">' + fld('From', '<input class="in" type="date" id="rfrom" data-in="rangeDate" value="' + d[0] + '" max="' + today() + '">') + fld('To', '<input class="in" type="date" id="rto" data-in="rangeDate" value="' + d[1] + '" max="' + today() + '">') + '</div>' : '');
+}
+A.range = function (el) { S.range = el.getAttribute('data-v'); if (S.range === 'custom' && !S.from) { S.from = addDays(today(), -6); S.to = today(); } go(S.screen, S.arg); };
+I.rangeDate = debounce(function () { var a = val('rfrom'), b = val('rto'); if (!a || !b) return; if (a > b) { var t = a; a = b; b = t; } S.from = a; S.to = b; go(S.screen, S.arg); }, 500);
+
+/** What to buy soon: low on stock now, or selling fast enough to run out within the planning days. */
+function toBuyList() {
+  var sold = (S.dash && S.dash.sold30) || {}, days = S.settings.ReorderPlanDays || 15, out = [];
+  S.products.forEach(function (p) {
+    if (!p.active || p.stock === null) return;
+    var lv = level(p), need = (sold[p.sku] || 0) / 30 * days, low = p.stock <= lv, runsOut = need > 0 && p.stock - need <= 0;
+    if (!low && !runsOut) return;
+    var target = lv + Math.max(1, Math.ceil(need * 2));
+    out.push({ p: p, buy: Math.max(1, target - p.stock), why: runsOut && !low ? 'Sells about ' + Math.ceil(need) + ' in ' + days + ' days' : (p.stock <= 0 ? 'None left' : 'Only ' + p.stock + ' left') });
+  });
+  out.sort(function (a, b) { return a.p.stock - b.p.stock; });
+  return out;
+}
+function upcomingFestivals() {
+  var t = today(), lim = addDays(t, S.settings.FestivalAlertDays || 0);
+  return S.festivals.filter(function (f) { return f.date >= t && f.date <= lim; });
+}
+function barChart(d) {
+  var pts = [], map = {}, W = Math.max(280, Math.min(720, ($('#view').clientWidth || 360) - 60)), H = 190, L = 40, B = 22, T = 8;
+  d.series.forEach(function (s) { map[s.d] = s; });
+  if (d.grain === 'day') { for (var x = d.from; x <= d.to; x = addDays(x, 1)) pts.push(map[x] || { d: x, s: 0, p: 0, b: 0 }); }
+  else {
+    var m = d.from.slice(0, 7), end = d.to.slice(0, 7);
+    while (m <= end) { pts.push(map[m] || { d: m, s: 0, p: 0, b: 0 }); var y = +m.slice(0, 4), mo = +m.slice(5); mo++; if (mo > 12) { mo = 1; y++; } m = y + '-' + ('0' + mo).slice(-2); }
+  }
+  var max = 0; pts.forEach(function (p) { if (p.s > max) max = p.s; });
+  if (!max) return '<div class="empty">No sales in this period.</div>';
+  var pow = Math.pow(10, Math.floor(Math.log(max) / Math.LN10)), top = Math.ceil(max / pow) * pow; if (top / 2 >= max) top = top / 2;
+  var bw = (W - L) / pts.length, gap = Math.min(6, bw * 0.25), out = '', every = Math.ceil(pts.length / (W < 420 ? 5 : 9));
+  [0, 0.5, 1].forEach(function (f) { var yy = T + (H - T - B) * (1 - f); out += '<line x1="' + L + '" x2="' + W + '" y1="' + yy + '" y2="' + yy + '" stroke="var(--line)" stroke-width="1"/><text x="' + (L - 6) + '" y="' + (yy + 4) + '" text-anchor="end">' + short(top * f) + '</text>'; });
+  pts.forEach(function (p, i) {
+    var h = (H - T - B) * p.s / top, x = L + i * bw + gap / 2, w = Math.max(1, bw - gap), label = d.grain === 'day' ? dShort(p.d) : MON[+p.d.slice(5) - 1] + ' ' + p.d.slice(2, 4);
+    if (p.s > 0) out += '<rect x="' + x.toFixed(1) + '" y="' + (H - B - h).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + Math.max(h, 1).toFixed(1) + '" rx="2" fill="var(--teal)"><title>' + esc(label + ': ' + money(p.s) + ', ' + p.b + ' bills') + '</title></rect>';
+    if (i % every === 0) out += '<text x="' + (x + w / 2).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle">' + esc(label) + '</text>';
+  });
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Sales per ' + d.grain + '">' + out + '</svg>';
+}
+var PAYCOL = ['var(--teal)', 'var(--gold)', 'var(--good)', 'var(--warn)', 'var(--muted)', 'var(--bad)'];
+R.home = function (view) {
+  view.innerHTML = '<div class="wrap">' + rangeBar() + '<div id="homebody" class="stack">' + loadBox('Adding up the sales…') + '</div></div>';
+  loadDash().then(function (d) {
+    if (S.screen !== 'home') return;
+    var t = d.tot, delta = '';
+    if (d.prev.sales > 0) { var pc = Math.round((t.sales - d.prev.sales) / d.prev.sales * 100); delta = '<span class="' + (pc >= 0 ? 'good' : 'bad') + '">' + (pc >= 0 ? 'Up ' : 'Down ') + Math.abs(pc) + '%</span> on the ' + (d.days === 1 ? 'day' : d.days + ' days') + ' before'; }
+    var h = '<div class="hero"><div><div class="muted">Sales ' + esc(rangeLabel()) + '</div><div class="big">' + money(t.sales) + '</div></div><div class="muted">' + t.bills + (t.bills === 1 ? ' bill, ' : ' bills, ') + t.units + (t.units === 1 ? ' item' : ' items') + (delta ? '<br>' + delta : '') + '</div></div>';
+    h += '<div class="stats"><div><div class="v ' + (t.net < 0 ? 'bad' : '') + '">' + money(t.net) + '</div><div class="k">Profit' + (t.travel || t.loss ? ' after travel and breakage' : '') + '</div></div>' +
+      '<div><div class="v">' + money(t.received) + '</div><div class="k">Money received</div></div>' +
+      '<button data-act="go" data-v="paylater"><div class="v ' + (d.due.amount > 0 ? 'warn' : '') + '">' + money(d.due.amount) + '</div><div class="k">To collect' + (d.due.count ? ' from ' + d.due.count + (d.due.count === 1 ? ' bill' : ' bills') : '') + '</div></button></div>';
+    upcomingFestivals().forEach(function (f) {
+      var n = dayDiff(today(), f.date);
+      h += '<div class="note fest">' + ic('bell') + '<div><b>' + esc(f.name) + '</b> ' + (n === 0 ? 'is today' : n === 1 ? 'is tomorrow' : 'in ' + n + ' days') + ' (' + esc(dDay(f.date)) + ').' + (f.notes ? ' ' + esc(f.notes) : '') + '</div></div>';
+    });
+    var buy = toBuyList(), counted = S.products.filter(function (p) { return p.active && p.stock !== null; }).length, activeN = S.products.filter(function (p) { return p.active; }).length;
+    if (buy.length) h += '<div class="note warn">' + ic('alert') + '<div><b>' + buy.length + (buy.length === 1 ? ' item' : ' items') + ' to buy</b> in the next ' + S.settings.ReorderPlanDays + ' days.</div><button class="btn sm" data-act="go" data-v="reports" data-arg="tobuy">See list</button></div>';
+    if (activeN && counted < activeN) h += '<div class="note">' + ic('count') + '<div><b>' + (activeN - counted) + ' of ' + activeN + ' items are not counted yet.</b> Count them once so the app can warn you when they run low.</div><button class="btn sm" data-act="go" data-v="count">Count</button></div>';
+    if (d.orders.open) h += '<div class="note">' + ic('orders') + '<div><b>' + d.orders.open + ' custom ' + (d.orders.open === 1 ? 'order' : 'orders') + ' open</b>' + (d.orders.dueSoon ? ', ' + d.orders.dueSoon + ' needed within 3 days' : '') + '.</div><button class="btn sm" data-act="go" data-v="orders">Open</button></div>';
+    var tot = 0; d.methods.forEach(function (m) { if (m.amount > 0) tot += m.amount; });
+    var pay = d.methods.length ? '<div class="bar">' + d.methods.map(function (m, i) { return m.amount > 0 ? '<i style="width:' + (m.amount / tot * 100).toFixed(1) + '%;background:' + PAYCOL[i % PAYCOL.length] + '"></i>' : ''; }).join('') + '</div><div class="legend">' +
+      d.methods.map(function (m, i) { return '<span><b style="background:' + PAYCOL[i % PAYCOL.length] + '"></b>' + esc(m.method) + ' <span class="num">' + money(m.amount) + '</span></span>'; }).join('') + '</div>' : '<div class="empty">No money received in this period.</div>';
+    var topMax = d.items.length ? d.items[0].rev : 0;
+    var topItems = d.items.slice(0, 6).map(function (i) { return '<div><div class="row"><span class="grow">' + esc(i.name) + ' <span class="muted small">x' + i.qty + '</span></span><span class="num">' + money(i.rev) + '</span></div><div class="meter"><i style="width:' + (topMax ? Math.max(2, i.rev / topMax * 100) : 0).toFixed(0) + '%"></i></div></div>'; }).join('');
+    var recent = d.recent.map(function (b) { return '<button class="item" data-act="openBill" data-v="' + esc(b.id) + '"><span class="grow"><span class="t">' + esc(b.id) + (b.customer ? ', ' + esc(b.customer) : '') + '</span><br><span class="s">' + esc(dDay(b.date)) + ', ' + esc(b.method) + '</span></span>' + (b.balance > 0 ? '<span class="tag warn">' + money(b.balance) + ' due</span>' : '') + '<span class="amt">' + money(b.total) + '</span></button>'; }).join('');
+    h += '<div class="cols"><div class="panel chart"><h3>Sales per ' + d.grain + '</h3>' + barChart(d) + '</div><div class="panel"><h3>Money received</h3>' + pay + '</div>' +
+      '<div class="panel"><h3>Best sellers</h3><div class="stack">' + (topItems || '<div class="empty">Nothing sold in this period.</div>') + '</div></div>' +
+      '<div><h3 style="margin:0 0 8px 2px">Latest bills</h3><div class="list">' + (recent || '<div class="empty">No bills yet. Tap Billing to make the first one.</div>') + '</div></div></div>';
+    $('#homebody').innerHTML = h;
+  }).catch(function (e) { if ($('#homebody')) $('#homebody').innerHTML = '<div class="note bad">' + esc(e.message) + '</div>'; });
+};
+
+/* ================= item picker (shared by Sell and Stock in) ================= */
+function isWide() { return window.matchMedia('(min-width:900px)').matches; }
+function pickerHtml(act) {
+  return '<div class="search">' + ic('search') + '<input class="in" id="pickq" type="search" placeholder="Search items" autocomplete="off" data-in="pickq" data-pick="' + act + '" value="' + esc(S.pick.q) + '"></div>' +
+    '<div id="pickcats">' + chipRow('pickCat', [['', 'All']].concat(catsInUse().map(function (c) { return [c, c]; })), S.pick.cat) + '</div><div class="list" id="picklist" data-pick="' + act + '"></div>';
+}
+function renderPickList() {
+  var box = $('#picklist'); if (!box) return;
+  var act = box.getAttribute('data-pick'), all = findItems(S.pick.q, S.pick.cat), rows = all.slice(0, 80);
+  var inBill = {}; if (act === 'addItem') S.bill.lines.forEach(function (l) { if (l.sku) inBill[l.sku] = (inBill[l.sku] || 0) + n0(l.qty); });
+  box.innerHTML = rows.map(function (p) {
+    var price = act === 'addItem' ? sellPrice(p) : p.cost, sub = psub(p);
+    return '<button class="item" data-act="' + act + '" data-v="' + esc(p.sku) + '"><span class="grow"><span class="t">' + esc(pname(p)) + '</span><br><span class="s">' + (sub ? esc(sub) + ' ' : '') + stockTag(p) + (inBill[p.sku] ? ' <span class="tag gold">' + inBill[p.sku] + ' on bill</span>' : '') + '</span></span>' +
+      '<span class="amt">' + (price === null || price === undefined ? '<span class="muted small">No price</span>' : money(price)) + (act === 'addStockLine' ? '<br><span class="muted small">last cost</span>' : '') + '</span></button>';
+  }).join('') + (all.length > rows.length ? '<div class="empty small">Showing 80 of ' + all.length + '. Type a few letters to find the item.</div>' : '') +
+    (!all.length ? '<div class="empty">No item matches.<br><button class="btn sm" data-act="newItem" data-then="' + act + '" style="margin-top:10px">' + ic('plus') + 'Add a new item</button></div>' : '');
+}
+I.pickq = debounce(function (el) { S.pick.q = el.value; renderPickList(); }, 120);
+A.pickCat = function (el) { S.pick.cat = el.getAttribute('data-v'); $all('[data-act="pickCat"]').forEach(function (b) { b.setAttribute('aria-pressed', String(b === el)); }); renderPickList(); };
+
+/* ================= New bill (the selling screen) =================
+   On a phone it is three small steps: pick the items, check the bill, take the payment.
+   On a wide screen the items are on the left and the bill with the payment on the right. */
+var SELL = { step: 'pick', more: false, done: null };
+function newBill() {
+  return { ref: uid(), lines: [], dType: 'pct', dVal: '', method: '', later: false, paid: '', customer: '', phone: '',
+    soldBy: S.settings.DefaultSoldBy || (S.user ? S.user.name : ''), billNo: '', date: '', notes: '', orderId: '', advance: 0 };
+}
+function billTotals(b) {
+  var sub = 0, units = 0, pct = S.settings.PaintExtraPercent || 0;
+  b.lines.forEach(function (l) { var price = n0(l.price), q = Math.max(0, Math.floor(n0(l.qty))); l._paint = l.painted ? Math.round(price * pct / 100) : 0; l._total = r2(q * (price + l._paint)); sub = r2(sub + l._total); units += q; });
+  var dv = n0(b.dVal), disc = 0;
+  if (dv > 0) disc = b.dType === 'pct' ? Math.round(sub * Math.min(dv, 100) / 100) : Math.min(r2(dv), sub);
+  var taxable = r2(sub - disc), tax = S.settings.TaxPercent > 0 ? r2(taxable * S.settings.TaxPercent / 100) : 0, total = Math.round(r2(taxable + tax));
+  var adv = Math.min(total, b.advance || 0), due = r2(total - adv), paid = b.later ? Math.min(due, Math.max(0, r2(n0(b.paid)))) : due;
+  return { sub: sub, units: units, disc: disc, tax: tax, total: total, adv: adv, due: due, paid: paid, bal: r2(due - paid) };
+}
+function lineWarn(l) {
+  var p = l.sku ? S.bySku[l.sku] : null, out = '', price = n0(l.price);
+  if (p && p.cost > 0 && String(l.price) !== '') {
+    if (price < p.cost) out += '<div class="warnline bad">Below the cost price (' + money(p.cost) + ').</div>';
+    else if (price < minPrice(p.cost) - 0.004) out += '<div class="warnline">Below cost + ' + S.settings.MinMarkupPercent + '% (' + money(minPrice(p.cost)) + ').</div>';
+  }
+  if (p && p.stock !== null && n0(l.qty) > p.stock) out += '<div class="warnline">The app counts only ' + p.stock + ' in stock. You can still sell it.</div>';
+  return out;
+}
+/* The bill being made is kept on this device, so it is not lost if the phone closes the app or the page reloads.
+   It comes back only on the same day and within six hours. */
+function keepBill() { var b = S.bill; store('skm_bill', b && b.lines.length ? JSON.stringify({ at: Date.now(), day: today(), bill: b }) : null); }
+function keptBill() {
+  try {
+    var k = JSON.parse(store('skm_bill') || 'null'), b = k && k.bill, age = k ? Date.now() - k.at : -1;
+    if (b && b.ref && Array.isArray(b.lines) && b.lines.length && k.day === today() && age >= 0 && age < 6 * 3600000) { SELL.kept = true; return b; }
+  } catch (e) {}
+  return null;
+}
+function billQty(sku) { var n = 0; S.bill.lines.forEach(function (l) { if (l.sku === sku) n += Math.max(0, Math.floor(n0(l.qty))); }); return n; }
+function lineById(id) { for (var i = 0; i < S.bill.lines.length; i++) if (S.bill.lines[i].id === id) return S.bill.lines[i]; return null; }
+/* the last few things sold from this phone, offered first on the next bill */
+function recentSkus() { try { var a = JSON.parse(store('skm_recent') || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+function rememberSold(lines) {
+  var r = recentSkus();
+  lines.forEach(function (l) { if (!l.sku) return; r = r.filter(function (x) { return x !== l.sku; }); r.unshift(l.sku); });
+  store('skm_recent', JSON.stringify(r.slice(0, 12)));
+}
+
+/* ---------- step 1: what is the customer buying? ---------- */
+function addCtl(p) {
+  var n = billQty(p.sku), nm = esc(fullName(p)), v = esc(p.sku);
+  return n ? '<span class="qstep"><button type="button" data-act="subItem" data-v="' + v + '" aria-label="One less ' + nm + '">−</button><b>' + n + '</b><button type="button" data-act="addItem" data-v="' + v + '" aria-label="One more ' + nm + '">+</button></span>'
+    : '<button type="button" class="addbtn" data-act="addItem" data-v="' + v + '" aria-label="Add ' + nm + '">Add</button>';
+}
+function prow(p) {
+  var price = sellPrice(p), sub = psub(p);
+  return '<div class="prow' + (billQty(p.sku) ? ' on' : '') + '" data-sku="' + esc(p.sku) + '"><div class="grow"><div class="t">' + esc(pname(p)) + '</div><div class="s">' + (sub ? '<span class="sz">' + esc(sub) + '</span> ' : '') + stockTag(p) + '</div></div>' +
+    '<div class="pr"><div class="amt">' + (price === null || price === undefined ? '<span class="muted small">No price yet</span>' : money(price)) + '</div><div class="pc">' + addCtl(p) + '</div></div></div>';
+}
+function pickBodyHtml() {
+  var q = S.pick.q.trim(), cat = S.pick.cat;
+  if (q) {
+    var all = findItems(q, ''), rows = all.slice(0, 60);
+    return '<h3 class="sec">' + (all.length ? 'Found ' + all.length + (all.length === 1 ? ' item' : ' items') : 'Nothing found for "' + esc(q) + '"') + '</h3>' +
+      (rows.length ? '<div class="list">' + rows.map(prow).join('') + '</div>' : '') + (all.length > rows.length ? '<div class="empty small">Showing the first 60. Type a few more letters.</div>' : '') +
+      (all.length ? '' : '<button class="btn" data-act="oneOff">' + ic('plus') + 'Put it on this bill anyway</button><button class="btn" data-act="newItem" data-then="addItem">' + ic('plus') + 'Add it to the item list</button>');
+  }
+  if (cat) {
+    var list = findItems('', cat);
+    return '<button type="button" class="backrow" data-act="sellGroup" data-v="">' + ic('back') + 'All groups</button><h2 class="grp">' + esc(cat) + '</h2>' +
+      (list.length ? '<div class="list">' + list.map(prow).join('') + '</div>' : '<div class="empty">No items in this group yet.</div>') +
+      '<button class="btn" data-act="newItem" data-then="addItem">' + ic('plus') + 'Add a new item</button>';
+  }
+  var counts = {}; S.products.forEach(function (p) { if (p.active) counts[p.cat] = (counts[p.cat] || 0) + 1; });
+  var recent = recentSkus().map(function (k) { return S.bySku[k]; }).filter(function (p) { return p && p.active; }).slice(0, 4);
+  var groups = catsInUse().filter(function (c) { return counts[c]; });
+  return (recent.length ? '<h3 class="sec">Sold recently</h3><div class="list">' + recent.map(prow).join('') + '</div>' : '') +
+    '<h3 class="sec">' + (recent.length ? 'Or choose a group' : 'Choose a group') + '</h3>' +
+    (groups.length ? '<div class="tiles">' + groups.map(function (c) { return '<button type="button" class="tile" data-act="sellGroup" data-v="' + esc(c) + '"><span class="t">' + esc(c) + '</span><span class="s">' + counts[c] + (counts[c] === 1 ? ' item' : ' items') + '</span></button>'; }).join('') + '</div>' : '<div class="empty">There are no items yet. Add them under Items.</div>') +
+    '<button class="btn quiet" data-act="oneOff">' + ic('plus') + 'Something that is not in the list</button>';
+}
+function pickHtml() {
+  return '<div class="pick stack"><h2 class="ask">What is the customer buying?</h2><div class="search">' + ic('search') +
+    '<input class="in" id="pickq" type="search" placeholder="Search, like ganesh 12" autocomplete="off" data-in="sellq" aria-label="Search items" value="' + esc(S.pick.q) + '"></div><div id="sellbody" class="stack">' + pickBodyHtml() + '</div></div>';
+}
+function refreshPick() { var e = $('#sellbody'); if (e) e.innerHTML = pickBodyHtml(); }
+I.sellq = debounce(function (el) { S.pick.q = el.value; refreshPick(); }, 150);
+A.sellGroup = function (el) { S.pick.cat = el.getAttribute('data-v'); S.pick.q = ''; var q = $('#pickq'); if (q) q.value = ''; refreshPick(); $all('#view, .sell > .pick').forEach(function (v) { v.scrollTop = 0; }); };
+/* after the bill changed: show the new count on that item's row, the bill panel on wide screens, the bottom button */
+function syncRow(sku) {
+  var found = false;
+  $all('.prow').forEach(function (row) {
+    if (row.getAttribute('data-sku') !== sku) return;
+    found = true; $('.pc', row).innerHTML = addCtl(S.bySku[sku]); row.className = 'prow' + (billQty(sku) ? ' on' : '');
+  });
+  return found;
+}
+function afterPick(sku) {
+  if (sku && !syncRow(sku)) refreshPick();
+  if (isWide() && $('#billhost')) { if (SELL.step === 'pay') SELL.step = 'bill'; drawPanel(); }
+  updateBill();
+  showLine(sku);
+}
+A.addItem = function (el) {
+  var p = S.bySku[el.getAttribute('data-v')]; if (!p) return;
+  if (SELL.done) SELL.done = null;
+  var l = null; S.bill.lines.forEach(function (x) { if (x.sku === p.sku && !x.painted) l = x; });
+  if (l) l.qty = Math.floor(n0(l.qty)) + 1;
+  else { var price = sellPrice(p); S.bill.lines.push({ id: uid(), sku: p.sku, name: pname(p), sub: psub(p), cat: p.cat, qty: 1, price: price === null ? '' : price, painted: false }); }
+  afterPick(p.sku);
+};
+A.subItem = function (el) {
+  var sku = el.getAttribute('data-v'), l = null;
+  S.bill.lines.forEach(function (x) { if (x.sku === sku && (!l || l.painted)) l = x; });
+  if (!l) return;
+  l.qty = Math.floor(n0(l.qty)) - 1;
+  if (l.qty < 1) S.bill.lines = S.bill.lines.filter(function (x) { return x !== l; });
+  afterPick(sku);
+};
+
+/* ---------- step 2: check the bill ---------- */
+function sumHtml(t) {
+  var b = S.bill, rows = (t.disc || t.tax ? '<span>Items</span><span>' + money(t.sub) + '</span>' : '') +
+    (t.disc ? '<span>Discount' + (b.dType === 'pct' ? ' ' + n0(b.dVal) + '%' : '') + '</span><span>−' + money(t.disc) + '</span>' : '') +
+    (t.tax ? '<span>' + esc(S.settings.TaxName) + ' ' + S.settings.TaxPercent + '%</span><span>' + money(t.tax) + '</span>' : '');
+  return (rows ? '<div class="sum">' + rows + '</div>' : '') + '<div class="grand"><span>Total</span><span class="num" id="b-total">' + money(t.total) + '</span></div>' +
+    (t.adv ? '<div class="note"><div>Advance already paid on this order: <b>' + money(t.adv) + '</b>. Still to pay: <b>' + money(t.due) + '</b>.</div></div>' : '');
+}
+function slipHtml() {
+  var b = S.bill;
+  var lines = b.lines.map(function (l) {
+    return '<div class="line" data-sku="' + esc(l.sku) + '"><div class="row lhead"><div class="grow"><div class="nm">' + esc(l.name) + '</div>' + (l.sub ? '<div class="small muted">' + esc(l.sub) + '</div>' : '') + '</div><span class="ltot" id="lt-' + l.id + '"></span></div>' +
+      '<div class="ctl"><div class="mini"><span>How many</span><span class="step"><button type="button" data-act="qtyStep" data-id="' + l.id + '" data-d="-1" aria-label="One less">−</button><input id="q-' + l.id + '" type="number" inputmode="numeric" min="1" step="1" value="' + esc(l.qty) + '" data-in="lineQty" data-id="' + l.id + '" aria-label="How many"><button type="button" data-act="qtyStep" data-id="' + l.id + '" data-d="1" aria-label="One more">+</button></span></div>' +
+      '<label class="mini grow">Price of one<input class="in num price" id="p-' + l.id + '" type="number" inputmode="decimal" min="0" step="any" value="' + esc(l.price) + '" data-in="linePrice" data-id="' + l.id + '" placeholder="Price"></label></div>' +
+      '<div class="row lfoot"><label class="check paint grow"><input type="checkbox" id="pt-' + l.id + '" data-in="linePaint" data-id="' + l.id + '"' + (l.painted ? ' checked' : '') + '><span>Painted for the customer<span class="muted" id="pe-' + l.id + '"></span></span></label>' +
+      '<button class="btn sm quiet rm" data-act="rmLine" data-id="' + l.id + '" aria-label="Remove ' + esc(l.name) + '">' + ic('trash') + 'Remove</button></div><div id="lw-' + l.id + '"></div></div>';
+  }).join('');
+  return '<div class="slip"><div class="row"><div class="grow"><div class="shop">' + esc(S.settings.ShopName) + '</div><div class="small muted">' + esc(dLong(b.date || today())) + (b.orderId ? ', custom order ' + esc(b.orderId) : '') + '</div></div>' +
+    (b.lines.length ? '<button class="btn sm quiet" data-act="clearBill">Start again</button>' : '') + '</div>' +
+    (lines || '<div class="empty">Nothing on the bill yet.<br>Tap Add on what the customer is buying.</div>') +
+    '<div class="slipacts"><button class="btn" data-act="oneOff">' + ic('plus') + 'Add something not in the list</button>' +
+    (b.lines.length ? '<button class="btn" data-act="discount">' + ic('tag') + '<span id="b-discbtn"></span></button>' : '') + '</div><div id="b-sumbox"></div></div>';
+}
+
+/* ---------- step 3: payment ---------- */
+function payHtml() {
+  var b = S.bill, pm = S.lists.PaymentMethod || ['Cash'], staff = [S.settings.ShopName].concat(S.lists.Staff || []);
+  var who = '<div class="grid2">' + fld('Customer name', '<input class="in" id="b-cust" value="' + esc(b.customer) + '" data-in="billField" data-k="customer" autocomplete="off">') +
+    fld('Customer phone', '<input class="in" id="b-phone" type="tel" value="' + esc(b.phone) + '" data-in="billField" data-k="phone" autocomplete="off">') + '</div>';
+  return '<div class="pay stack"><div class="amountbox"><span class="muted">The customer pays</span><span class="num" id="p-total"></span><span class="small muted" id="p-adv"></span></div>' +
+    '<h2 class="ask">How is the customer paying?</h2><div class="paytiles" id="b-methods">' + pm.map(function (m) { return '<button type="button" class="paytile" data-act="billMethod" data-v="' + esc(m) + '" aria-pressed="' + (m === b.method) + '">' + ic('check') + '<span>' + esc(m) + '</span></button>'; }).join('') + '</div>' +
+    '<label class="check big"><input type="checkbox" id="b-later" data-in="billLater"' + (b.later ? ' checked' : '') + '><span>The customer will pay some or all of it later</span></label>' +
+    (b.later ? '<div id="b-laterbox" class="panel stack">' + fld('Paid now', '<input class="in num" id="b-paid" type="number" inputmode="decimal" min="0" step="any" value="' + esc(b.paid) + '" data-in="billField" data-k="paid" placeholder="0">') +
+      '<div class="small warn" id="b-bal"></div>' + who + '</div>' : '') +
+    '<button type="button" class="btn quiet" id="b-morebtn" data-act="moreDetails" aria-expanded="' + SELL.more + '">' + (SELL.more ? 'Hide the extra details' : (b.later ? 'Sold by, bill book number, date, note' : 'Customer name, sold by, bill book number, note')) + '</button>' +
+    (SELL.more ? '<div id="b-more" class="panel stack">' + (b.later ? '' : who) +
+      '<div class="grid2">' + fld('Sold by', sel('b-soldby', staff, b.soldBy, 'data-in="billField" data-k="soldBy"', undefined, 'name')) +
+      fld('Bill no. (from the bill book)', '<input class="in" id="b-billno" value="' + esc(b.billNo) + '" data-in="billField" data-k="billNo" autocomplete="off">') + '</div>' +
+      '<div class="grid2">' + fld('Date', '<input class="in" id="b-date" type="date" max="' + today() + '" value="' + esc(b.date || today()) + '" data-in="billField" data-k="date">') +
+      fld('Note', '<input class="in" id="b-notes" value="' + esc(b.notes) + '" data-in="billField" data-k="notes" autocomplete="off">') + '</div></div>' : '') + '</div>';
+}
+
+/* ---------- saved ---------- */
+function doneHtml() {
+  var d = SELL.done, canUndo = S.user.role === 'admin' || S.settings.StaffCanCancelBills === 'Yes';
+  var how = d.balance > 0 ? (d.paid > 0 ? money(d.paid) + ' paid by ' + esc(d.method) + '. ' : '') + money(d.balance) + ' to collect later' + (d.customer ? ' from ' + esc(d.customer) : '') + '.'
+    : (d.method === 'Advance' ? 'Covered by the advance paid on the order.' : (d.paid > 0 && d.method ? 'Paid by ' + esc(d.method) + '.' : 'Nothing to pay.'));
+  var rows = d.lines.map(function (l) { return [esc(l.name) + (l.sub ? '<br><span class="muted small">' + esc(l.sub) + (l.painted ? ', painted' : '') + '</span>' : (l.painted ? '<br><span class="muted small">Painted</span>' : '')), l.qty, money(l.each), money(l.total)]; });
+  if (d.disc) rows.push(['Discount', '', '', '−' + money(d.disc)]);
+  if (d.tax) rows.push([esc(S.settings.TaxName) + ' ' + S.settings.TaxPercent + '%', '', '', money(d.tax)]);
+  return '<div class="done stack"><div class="tick">' + ic('check') + '</div><h2>Bill saved</h2><div class="num big">' + money(d.total) + '</div><p>' + how + '</p>' +
+    '<div class="panel stack"><div class="small muted">To copy into the bill book. Bill ' + esc(d.saleId) + ', ' + esc(dLong(d.date)) + '</div>' +
+    tableHtml([{ t: 'Item' }, { t: 'Qty', n: 1 }, { t: 'Rate', n: 1 }, { t: 'Amount', n: 1 }], rows, ['Total', '', '', money(d.total)]) + '</div>' +
+    (canUndo ? '<button class="btn quiet" data-act="undoBill">This bill was a mistake: cancel it</button>' : '') + '</div>';
+}
+A.newBill = function () { SELL.done = null; SELL.step = 'pick'; go('sell'); };
+A.undoBill = function () {
+  var d = SELL.done; if (!d) return;
+  confirmBox('Cancel bill ' + d.saleId + '?', 'The items go back into stock and the bill is taken out of all totals.', 'Cancel the bill', true).then(function (ok) {
+    if (!ok) return;
+    run(null, function () { return call('cancelSale', { id: d.saleId }).then(function (r) { mergeProducts(r.products); S.dash = null; SELL.done = null; SELL.step = 'pick'; toast('Bill ' + d.saleId + ' cancelled'); go('sell'); }); });
+  });
+};
+
+/* ---------- putting the screen together ----------
+   The big button for the next thing to do is always in the same place: the bar at the bottom. */
+var MOUSE = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+function backRow(to, text) { return '<button type="button" class="backrow" data-act="sellStep" data-v="' + to + '">' + ic('back') + text + '</button>'; }
+function billBar() { return isWide() ? $('#billhost .colfoot') : $('#dock'); }
+function panelStep() { return SELL.done ? 'done' : (SELL.step === 'pay' && S.bill.lines.length ? 'pay' : 'bill'); }
+/* the right-hand side of a wide screen: the bill, then the payment, then the saved bill */
+function panelHtml() {
+  var st = panelStep();
+  return '<div class="colbody stack">' + (st === 'done' ? doneHtml() : (st === 'pay' ? backRow('bill', 'Back to the bill') + payHtml() : slipHtml())) + '</div><div class="colfoot" hidden></div>';
+}
+function drawPanel() {
+  var host = $('#billhost'); if (!host) return;
+  var old = $('.colbody', host), y = old ? old.scrollTop : 0, was = host.getAttribute('data-step'), now = panelStep();
+  if (SELL.step === 'pay' && now !== 'pay') SELL.step = 'bill';
+  host.innerHTML = panelHtml(); host.setAttribute('data-step', now);
+  var body = $('.colbody', host); if (body && was === now) body.scrollTop = y;
+}
+/* on a wide screen, bring the line that just changed into view on the bill */
+function showLine(sku) {
+  var body = $('#billhost .colbody'); if (!body || !sku) return;
+  var el = null; $all('.line', body).forEach(function (x) { if (x.getAttribute('data-sku') === sku) el = x; });
+  if (!el) return;
+  var r = el.getBoundingClientRect(), b = body.getBoundingClientRect();
+  if (r.top < b.top) body.scrollTop -= b.top - r.top + 8; else if (r.bottom > b.bottom) body.scrollTop += r.bottom - b.bottom + 8;
+}
+function updateBill() {
+  var b = S.bill, t = billTotals(b), set = function (id, v) { var e = $('#' + id); if (e) e.innerHTML = v; };
+  b.lines.forEach(function (l) { set('lt-' + l.id, money(l._total)); set('pe-' + l.id, l._paint ? ', adds ' + money(l._paint) + ' each' : ''); set('lw-' + l.id, lineWarn(l)); });
+  set('b-sumbox', sumHtml(t)); set('b-discbtn', t.disc ? 'Change the discount' : 'Give a discount');
+  set('p-total', money(t.due)); set('p-adv', t.adv ? 'after the advance of ' + money(t.adv) : '');
+  set('b-bal', b.later ? (t.bal > 0 ? money(t.bal) + ' goes to Pay later. The customer name is needed.' : 'Nothing is left to pay later.') : '');
+  keepBill();
+  var bar = billBar(); if (!bar) return;
+  if (SELL.done) { bar.hidden = false; if (!$('#b-new', bar)) bar.innerHTML = '<button class="btn primary big" id="b-new" data-act="newBill">' + ic('plus') + 'New bill</button>'; return; }
+  bar.hidden = !b.lines.length;
+  if (!b.lines.length) { bar.innerHTML = ''; return; }
+  var step = SELL.step === 'pay' ? 'pay' : (isWide() || SELL.step === 'bill' ? 'bill' : 'pick');
+  if (step === 'pick') bar.innerHTML = '<button class="btn primary big seebtn" id="seebill" data-act="sellStep" data-v="bill"><span>See the bill</span><span class="r">' + t.units + (t.units === 1 ? ' item, ' : ' items, ') + money(t.total) + ic('next') + '</span></button>';
+  else if (step === 'bill') bar.innerHTML = '<button class="btn primary big seebtn" id="b-next" data-act="sellStep" data-v="pay"><span>Take payment</span><span class="r">' + money(t.due) + ic('next') + '</span></button>';
+  else if (!$('#b-save', bar)) bar.innerHTML = '<button class="btn primary big" id="b-save" data-act="saveBill">' + ic('check') + 'Save bill</button>';
+}
+var SELL_TITLE = { pick: 'New bill', bill: 'Check the bill', pay: 'Payment', done: 'Bill saved' };
+R.sell = function (view) {
+  var wide = isWide(), h;
+  if (!SELL.done && SELL.step !== 'pick' && !S.bill.lines.length) SELL.step = 'pick';
+  var step = SELL.done ? 'done' : SELL.step;
+  if (wide) h = '<div class="sell">' + pickHtml() + '<div class="slipcol" id="billhost" data-step="' + panelStep() + '">' + panelHtml() + '</div></div>';
+  else if (step === 'done') h = doneHtml();
+  else if (step === 'pick') h = pickHtml();
+  else if (step === 'bill') h = backRow('pick', 'Add more items') + slipHtml();
+  else h = backRow('bill', 'Back to the bill') + payHtml();
+  view.className = 'view' + (wide ? ' fit' : '');
+  var dock = $('#dock'); if (wide) { dock.hidden = true; dock.innerHTML = ''; }
+  view.innerHTML = '<div class="wrap' + (wide ? '' : ' narrow') + '">' + h + '</div>';
+  $('#title').textContent = wide ? SELL_TITLE.pick : SELL_TITLE[step];
+  var back = $('#backbtn'), sub = !wide && (step === 'bill' || step === 'pay');
+  back.hidden = !sub; back.setAttribute('data-act', sub ? 'sellStep' : 'go'); back.setAttribute('data-v', sub ? (step === 'bill' ? 'pick' : 'bill') : 'more');
+  updateBill();
+  if (wide && MOUSE && !SELL.done && !sheets.length) { var q = $('#pickq'); if (q) { try { q.focus({ preventScroll: true }); } catch (e) { q.focus(); } } }
+};
+/* The phone's Back button on this screen: saved -> new bill, payment -> bill -> items -> all groups. */
+function sellBack() {
+  var wide = isWide();
+  if (SELL.done) { SELL.done = null; SELL.step = 'pick'; go('sell'); return true; }
+  if (SELL.step === 'pay' || (SELL.step === 'bill' && !wide)) {
+    SELL.step = SELL.step === 'pay' ? 'bill' : 'pick';
+    if (wide && $('#billhost')) { drawPanel(); updateBill(); } else go('sell');
+    return true;
+  }
+  if (S.pick.q || S.pick.cat) { A.sellGroup({ getAttribute: function () { return ''; } }); return true; }
+  return false;
+}
+/* After the bill changed. A wide screen redraws only the bill side, so the item list keeps its place. */
+function renderSell() {
+  if (S.screen !== 'sell') return;
+  if (isWide() && $('#billhost')) { drawPanel(); refreshPick(); updateBill(); }
+  else R.sell($('#view'));
+}
+function billProblem(saving) {
+  var b = S.bill, t = billTotals(b), bad = null;
+  b.lines.forEach(function (l) {
+    if (!bad && (String(l.price) === '' || isNaN(num(l.price)))) bad = 'Type a price for ' + l.name + '.';
+    if (!bad && !(Math.floor(n0(l.qty)) >= 1)) bad = 'The quantity of ' + l.name + ' must be 1 or more.';
+  });
+  if (!bad && !b.lines.length) bad = 'Add at least one item to the bill.';
+  if (!bad && saving && t.bal > 0 && !b.customer.trim()) bad = 'Type the customer name. It is needed when money will be paid later.';
+  if (!bad && saving && t.paid > 0 && !b.method) bad = 'Tap how the customer is paying.';
+  return bad;
+}
+A.sellStep = function (el) {
+  var v = el.getAttribute('data-v');
+  if (v === 'pay') { var bad = billProblem(false); if (bad) return toast(bad, 'hint'); }
+  SELL.step = v;
+  if (isWide() && $('#billhost')) { drawPanel(); updateBill(); } else go('sell');
+};
+A.qtyStep = function (el) { var l = lineById(el.getAttribute('data-id')); if (!l) return; l.qty = Math.max(1, Math.floor(n0(l.qty)) + (+el.getAttribute('data-d'))); $('#q-' + l.id).value = l.qty; updateBill(); if (l.sku) syncRow(l.sku); };
+I.lineQty = function (el) { var l = lineById(el.getAttribute('data-id')); if (l) { l.qty = el.value; updateBill(); if (l.sku) syncRow(l.sku); } };
+I.linePrice = function (el) { var l = lineById(el.getAttribute('data-id')); if (l) { l.price = el.value; updateBill(); } };
+I.linePaint = function (el) { var l = lineById(el.getAttribute('data-id')); if (l) { l.painted = el.checked; updateBill(); } };
+A.rmLine = function (el) {
+  var id = el.getAttribute('data-id');
+  S.bill.lines = S.bill.lines.filter(function (l) { return l.id !== id; });
+  if (!S.bill.lines.length) SELL.step = 'pick';
+  renderSell();
+};
+A.clearBill = function () {
+  confirmBox('Start this bill again?', 'Everything on the bill will be removed. Nothing has been saved yet.', 'Start again', true).then(function (ok) {
+    if (ok) { S.bill = newBill(); SELL.step = 'pick'; SELL.more = false; go('sell'); }
+  });
+};
+A.billMethod = function (el) {
+  S.bill.method = el.getAttribute('data-v');
+  $all('[data-act="billMethod"]').forEach(function (b) { b.setAttribute('aria-pressed', String(b === el)); });
+  var box = $('#b-methods'); if (box) box.classList.remove('need');
+};
+I.billField = function (el) {
+  var k = el.getAttribute('data-k'); S.bill[k] = el.value;
+  if (k === 'soldBy') { store('skm_name', el.value); if (S.user && S.user.open) S.token = 'open:' + el.value; }
+  updateBill();
+};
+I.billLater = function (el) { S.bill.later = el.checked; renderSell(); var c = $('#b-later'); if (c) c.focus(); };
+A.moreDetails = function () { SELL.more = !SELL.more; renderSell(); var b = $('#b-morebtn'); if (b) b.focus(); };
+
+/* ---------- discount: say the final price, or take off an amount or a percentage ---------- */
+function discCalc() {
+  var b = S.bill, sub = billTotals(b).sub, mode = val('d-mode'), raw = val('d-val'), v = num(raw), tax = S.settings.TaxPercent > 0 ? S.settings.TaxPercent : 0;
+  if (raw === '' || isNaN(v) || v < 0) return { error: 'Type a number.' };
+  if (mode === 'pct') { if (v > 100) return { error: 'The discount cannot be more than 100%.' }; return { type: 'pct', value: v, disc: Math.round(sub * v / 100), sub: sub }; }
+  var disc = mode === 'final' ? r2(sub - v / (1 + tax / 100)) : r2(v);
+  if (mode === 'final' && disc < 0) return { error: 'That is more than the bill of ' + money(Math.round(sub * (1 + tax / 100))) + '.' };
+  if (disc > sub) return { error: 'The discount is more than the bill.' };
+  return { type: 'amt', value: disc, disc: disc, sub: sub };
+}
+function discSay() {
+  var e = $('#d-say'); if (!e) return;
+  if (val('d-val') === '') { e.textContent = ''; return; }
+  var c = discCalc(), tax = S.settings.TaxPercent > 0 ? S.settings.TaxPercent : 0;
+  e.className = 'small ' + (c.error ? 'bad' : 'muted');
+  e.textContent = c.error ? c.error : (c.disc > 0 ? 'Discount ' + money(c.disc) + '. The customer pays ' + money(Math.round(r2((c.sub - c.disc) * (1 + tax / 100)))) + '.' : 'No discount.');
+}
+function discBox() {
+  var b = S.bill, mode = val('d-mode'), keep = n0(b.dVal) > 0 && b.dType === mode ? b.dVal : '';
+  $('#d-box').innerHTML = fld(mode === 'final' ? 'The customer pays' : (mode === 'amt' ? 'Take off (' + cur() + ')' : 'Take off (%)'), numIn('d-val', keep, 'data-in="discVal"'));
+  discSay();
+}
+A.discount = function () {
+  var b = S.bill, has = n0(b.dVal) > 0, mode = has ? b.dType : 'final';
+  sheet({ title: 'Discount', form: 'discount', body: '<p>The bill is <b>' + money(billTotals(b).sub) + '</b>. Say what the customer will pay, or how much to take off.</p>' +
+    '<input type="hidden" id="d-mode" value="' + mode + '">' + chipRow('discMode', [['final', 'Final price'], ['amt', cur() + ' off'], ['pct', '% off']], mode, 'wrapx bigchips') +
+    '<div id="d-box"></div><div class="small muted" id="d-say"></div>',
+    foot: (has ? '<button class="btn" data-act="discountNone">No discount</button>' : '') + '<button class="btn primary" data-act="submitTop">Done</button>' });
+  discBox();
+  var e = $('#d-val'); if (e && isWide()) e.focus();
+};
+A.discMode = function (el) { $('#d-mode').value = el.getAttribute('data-v'); $all('[data-act="discMode"]').forEach(function (b) { b.setAttribute('aria-pressed', String(b === el)); }); discBox(); var e = $('#d-val'); if (e) e.focus(); };
+I.discVal = function () { discSay(); };
+F.discount = function () {
+  var c = discCalc(); if (c.error) return toast(c.error, 'hint');
+  S.bill.dType = c.type; S.bill.dVal = c.value > 0 ? c.value : ''; closeSheet(); updateBill();
+};
+A.discountNone = function () { S.bill.dVal = ''; closeSheet(); updateBill(); };
+
+/* ---------- something that is not in the item list ---------- */
+A.oneOff = function () {
+  sheet({ title: 'Something not in the list', form: 'oneOff', body: fld('What is it?', inp('oo-name', S.pick.q.trim(), 'autofocus autocomplete="off"')) +
+    '<div class="grid3">' + fld('Price of one', numIn('oo-price', '')) + fld('How many', numIn('oo-qty', 1, 'step="1"')) + fld('Cost of one (if known)', numIn('oo-cost', '')) + '</div>' +
+    fld('Group', sel('oo-cat', catsInUse(), '', '', 'Other')) + '<p class="small muted">This goes on this bill only. To keep the item for next time, add it to the item list instead.</p>',
+    foot: '<button class="btn" data-act="newItem" data-then="addItem">Add to the item list</button><button class="btn primary" data-act="submitTop">Put on the bill</button>' });
+};
+A.submitTop = function (el) { var f = $('form', topSheet()); if (f) { var k = f.getAttribute('data-form'); F[k](f, el); } };
+F.oneOff = function () {
+  var name = val('oo-name'), price = num(val('oo-price')), qty = Math.floor(n0(val('oo-qty')));
+  if (!name) return toast('Type what the item is.', 'hint');
+  if (isNaN(price)) return toast('Type the price.', 'hint');
+  if (qty < 1) return toast('The quantity must be 1 or more.', 'hint');
+  if (SELL.done) SELL.done = null;
+  if (SELL.step === 'pay') SELL.step = 'bill';
+  S.bill.lines.push({ id: uid(), sku: '', name: name, sub: 'Not in the item list', cat: val('oo-cat') || 'Other', qty: qty, price: price, painted: false, cost: n0(val('oo-cost')) });
+  closeSheet(); renderSell(); toast(name + ' is on the bill');
+};
+
+/* ---------- save ---------- */
+A.saveBill = function (el) {
+  var b = S.bill, t = billTotals(b), bad = billProblem(true);
+  if (bad) {
+    if (!b.method && /paying/.test(bad)) { var box = $('#b-methods'); if (box) { box.classList.add('need'); if (box.scrollIntoView) box.scrollIntoView({ block: 'center' }); } }
+    return toast(bad, 'hint');
+  }
+  run(el, function () {
+    return call('saveSale', { ref: b.ref, date: b.date || '', billNo: b.billNo, soldBy: b.soldBy, customer: b.customer, phone: b.phone, notes: b.notes, orderId: b.orderId,
+      lines: b.lines.map(function (l) { return { sku: l.sku, name: l.name, cat: l.cat, qty: Math.floor(n0(l.qty)), price: n0(l.price), painted: !!l.painted, cost: l.cost || 0 }; }),
+      discountType: b.dType, discountValue: n0(b.dVal), method: b.method, paid: t.paid, expectTotal: t.total }).then(function (r) {
+      SELL.done = { saleId: r.saleId, date: r.date || b.date || today(), total: r.total, paid: r.paid, balance: r.balance, method: r.method || b.method, customer: b.customer, disc: t.disc, tax: t.tax,
+        lines: b.lines.map(function (l) { return { name: l.name, sub: l.sku ? l.sub : '', painted: !!l.painted, qty: Math.floor(n0(l.qty)), each: r2(n0(l.price) + (l._paint || 0)), total: l._total }; }) };
+      rememberSold(b.lines); mergeProducts(r.products); S.dash = null; S.bill = newBill(); SELL.step = 'pick'; SELL.more = false; S.pick.q = ''; S.pick.cat = '';
+      closeAllSheets();
+      go('sell');
+    }).catch(function (e) { if (e.code === 'STALE') return boot().then(function () { toast('Prices or settings changed on another device. Check the bill and save again.', true); }); throw e; });
+  });
+};
+
+/* ================= stock in ================= */
+function newStockIn() { return { ref: uid(), vendor: '', date: '', billNo: '', travel: '', notes: '', lines: [] }; }
+function stockTotals() { var items = 0; S.stockIn.lines.forEach(function (l) { l._total = r2(Math.max(0, Math.floor(n0(l.qty))) * n0(l.unit)); items = r2(items + l._total); }); var travel = Math.max(0, r2(n0(S.stockIn.travel))); return { items: items, travel: travel, total: r2(items + travel) }; }
+function stockLineNote(l) {
+  var p = S.bySku[l.sku], unit = num(l.unit), out = '';
+  if (!p || isNaN(unit)) return '';
+  if (p.cost !== null && Math.abs(unit - p.cost) > 0.004) { var pc = p.cost > 0 ? Math.round((unit - p.cost) / p.cost * 100) : 0; out += '<div class="warnline">Cost was ' + money(p.cost) + ' last time, now ' + money(unit) + (pc ? ' (' + (pc > 0 ? '+' : '') + pc + '%)' : '') + '. Both are kept in the history.</div>'; }
+  var sp = String(l.newPrice) !== '' ? num(l.newPrice) : p.price, sug = suggest(unit);
+  if (sug !== null && (sp === null || isNaN(sp) || sp < minPrice(unit) - 0.004)) out += '<div class="warnline">Cost + ' + S.settings.MinMarkupPercent + '% is ' + money(sug) + '. <button type="button" class="btn sm" data-act="useSuggest" data-id="' + l.id + '" data-v="' + sug + '">Use ' + money(sug) + '</button></div>';
+  return out;
+}
+function stockHtml() {
+  var s = S.stockIn, lines = s.lines.map(function (l) {
+    var p = S.bySku[l.sku] || { item: l.sku, type: '' };
+    return '<div class="line" style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="row"><div class="grow"><div class="t" style="font-weight:600">' + esc(pname(p)) + '</div><div class="small muted">' + esc(psub(p)) + '</div></div>' +
+      '<button class="iconbtn" data-act="rmStockLine" data-id="' + l.id + '" aria-label="Remove">' + ic('trash') + '</button></div>' +
+      '<div class="grid3" style="margin-top:6px">' + fld('How many', '<input class="in num" id="sq-' + l.id + '" type="number" inputmode="numeric" min="1" step="1" value="' + esc(l.qty) + '" data-in="stockLine" data-k="qty" data-id="' + l.id + '">') +
+      fld('Cost of one', '<input class="in num" id="su-' + l.id + '" type="number" inputmode="decimal" min="0" step="any" value="' + esc(l.unit) + '" data-in="stockLine" data-k="unit" data-id="' + l.id + '">') +
+      fld('Selling price', '<input class="in num" id="sp-' + l.id + '" type="number" inputmode="decimal" min="0" step="any" value="' + esc(l.newPrice) + '" data-in="stockLine" data-k="newPrice" data-id="' + l.id + '">') + '</div>' +
+      '<div class="row" style="margin-top:4px"><div class="grow" id="sn-' + l.id + '"></div><span class="num" id="st-' + l.id + '"></span></div></div>';
+  }).join('');
+  return '<div class="panel stack"><h3>This delivery</h3><div class="grid2">' +
+    fld('Vendor', sel('s-vendor', S.vendors.filter(function (v) { return v.active; }).map(function (v) { return v.name; }), s.vendor, 'data-in="stockField" data-k="vendor"', 'No vendor', 'vendor')) +
+    fld('Date', '<input class="in" id="s-date" type="date" max="' + today() + '" value="' + esc(s.date || today()) + '" data-in="stockField" data-k="date">') +
+    fld('Vendor bill no.', '<input class="in" id="s-billno" value="' + esc(s.billNo) + '" data-in="stockField" data-k="billNo" autocomplete="off">') +
+    fld('Travel or transport cost', '<input class="in num" id="s-travel" type="number" inputmode="decimal" min="0" step="any" value="' + esc(s.travel) + '" data-in="stockField" data-k="travel" placeholder="0">') + '</div>' +
+    (lines || '<div class="empty">Tap each item that arrived. Then type how many and what one piece cost this time.</div>') +
+    '<div class="kv"><span>Items</span><span class="n" id="s-items"></span><span>Travel or transport</span><span class="n" id="s-trav"></span><span class="total">Total paid</span><span class="n total" id="s-total"></span></div>' +
+    fld('Note', '<input class="in" id="s-notes" value="' + esc(s.notes) + '" data-in="stockField" data-k="notes" autocomplete="off">') +
+    '<button class="btn primary big" id="s-save" data-act="saveStockIn"' + (s.lines.length ? '' : ' disabled') + '>Save delivery</button></div>';
+}
+function updateStock() {
+  var t = stockTotals(), set = function (id, v) { var e = $('#' + id); if (e) e.innerHTML = v; };
+  S.stockIn.lines.forEach(function (l) { set('st-' + l.id, money(l._total)); set('sn-' + l.id, stockLineNote(l)); });
+  set('s-items', money(t.items)); set('s-trav', money(t.travel)); set('s-total', money(t.total));
+}
+function renderStock() { var h = $('#stockhost'); if (h) h.innerHTML = stockHtml(); updateStock(); }
+R.stockin = function (view) {
+  view.innerHTML = '<div class="wrap"><div class="two"><div class="side" id="stockhost"></div><div class="pick stack"><h3>Add what arrived</h3>' + pickerHtml('addStockLine') +
+    '<button class="btn" data-act="newItem" data-then="addStockLine">' + ic('plus') + 'New item that is not in the list</button></div></div></div>';
+  renderStock(); renderPickList();
+};
+A.addStockLine = function (el) {
+  var p = S.bySku[el.getAttribute('data-v')]; if (!p) return;
+  var l = null; S.stockIn.lines.forEach(function (x) { if (x.sku === p.sku) l = x; });
+  if (l) l.qty = n0(l.qty) + 1; else S.stockIn.lines.push({ id: uid(), sku: p.sku, qty: 1, unit: p.cost === null ? '' : p.cost, newPrice: p.price === null ? '' : p.price });
+  renderStock(); toast(pname(p) + ' added to the delivery');
+};
+A.rmStockLine = function (el) { var id = el.getAttribute('data-id'); S.stockIn.lines = S.stockIn.lines.filter(function (l) { return l.id !== id; }); renderStock(); };
+I.stockLine = function (el) { var id = el.getAttribute('data-id'); S.stockIn.lines.forEach(function (l) { if (l.id === id) l[el.getAttribute('data-k')] = el.value; }); updateStock(); };
+I.stockField = function (el) { S.stockIn[el.getAttribute('data-k')] = el.value; updateStock(); };
+A.useSuggest = function (el) { var id = el.getAttribute('data-id'), v = el.getAttribute('data-v'); S.stockIn.lines.forEach(function (l) { if (l.id === id) l.newPrice = v; }); var e = $('#sp-' + id); if (e) e.value = v; updateStock(); };
+A.saveStockIn = function (el) {
+  var s = S.stockIn, bad = null;
+  s.lines.forEach(function (l) { var p = S.bySku[l.sku]; if (!bad && !(Math.floor(n0(l.qty)) >= 1)) bad = 'Type how many ' + pname(p) + ' arrived.'; if (!bad && isNaN(num(l.unit))) bad = 'Type what one ' + pname(p) + ' cost.'; });
+  if (bad) return toast(bad, true);
+  run(el, function () {
+    return call('savePurchase', { ref: s.ref, vendor: s.vendor, date: s.date || '', billNo: s.billNo, travel: n0(s.travel), notes: s.notes,
+      lines: s.lines.map(function (l) { var p = S.bySku[l.sku], np = String(l.newPrice) === '' ? null : num(l.newPrice); return { sku: l.sku, qty: Math.floor(n0(l.qty)), unitCost: num(l.unit), newPrice: (np !== null && !isNaN(np) && np !== p.price) ? np : null }; }) })
+      .then(function (r) { mergeProducts(r.products); S.vendors = r.vendors; S.dash = null; S.stockIn = newStockIn(); toast('Saved delivery ' + r.purchaseId + ', ' + money(r.total)); if (S.screen === 'stockin') { renderStock(); renderPickList(); } });
+  });
+};
+
+/* ================= add or edit an item ================= */
+var itemThen = '';
+A.newItem = function (el) { itemThen = el.getAttribute('data-then') || ''; if (topSheet()) closeSheet(); itemForm(null); };
+A.editItem = function (el) { itemThen = ''; var p = S.bySku[el.getAttribute('data-v')]; closeSheet(); itemForm(p); };
+function itemForm(p) {
+  var n = !p; p = p || { sku: '', cat: S.pick.cat || '', item: '', type: '', size: '', inch: null, mat: '', painted: '', vendor: '', cost: null, price: null, reorder: null, active: true, notes: '' };
+  var types = {}; S.products.forEach(function (x) { if (x.type) types[x.type] = 1; });
+  sheet({ title: n ? 'New item' : 'Change item', form: 'item', wide: true,
+    body: '<input type="hidden" id="i-sku" value="' + esc(p.sku) + '">' +
+      '<div class="grid2">' + fld('Category', sel('i-cat', catsInUse(), p.cat, '', 'Choose a category', 'category')) +
+      fld('Item name', inp('i-item', p.item, 'autocomplete="off"' + (n ? ' autofocus' : ''))) + '</div>' +
+      '<div class="grid3">' + fld('Type', sel('i-type', Object.keys(types).sort(), p.type, '', 'No type', 'type')) +
+      fld('Size', sel('i-size', S.lists.Size || [], p.size, '', 'No size', 'size')) + fld('Size in inches', numIn('i-inch', p.inch)) +
+      fld('Material', sel('i-mat', S.lists.Material || [], p.mat, '', 'Not set', 'material')) + fld('Comes painted', sel('i-painted', ['Yes', 'No'], p.painted, '', 'Not set')) +
+      fld('Usual vendor', sel('i-vendor', S.vendors.map(function (v) { return v.name; }), p.vendor, '', 'Not set', 'vendor')) + '</div>' +
+      '<div class="grid3">' + fld('Cost price', numIn('i-cost', p.cost, 'data-in="itemCost"')) + fld('Selling price', numIn('i-price', p.price), '') +
+      (n ? fld('In the shop now', numIn('i-open', '', 'step="1"'), 'Leave empty if not counted') : fld('Reorder when this many left', numIn('i-reorder', p.reorder, 'step="1"'))) + '</div>' +
+      '<div id="i-sug" class="small"></div>' +
+      (n ? fld('Reorder when this many left', numIn('i-reorder', p.reorder, 'step="1"'), 'Empty uses the shop setting (' + S.settings.DefaultReorderLevel + ')') : '') +
+      fld('Note', inp('i-notes', p.notes, 'autocomplete="off"')) +
+      (n ? '' : '<label class="check"><input type="checkbox" id="i-active"' + (p.active ? ' checked' : '') + '>Show this item when selling</label>'),
+    foot: '<button class="btn primary" data-act="submitTop">' + (n ? 'Add item' : 'Save changes') + '</button>' });
+  if (n && S.pick.q) $('#i-item').value = S.pick.q;
+  I.itemCost();
+}
+I.itemCost = function () { var c = num(val('i-cost')), e = $('#i-sug'); if (!e) return; var sug = suggest(c); e.innerHTML = sug === null ? '' : 'Cost + ' + S.settings.MinMarkupPercent + '% is ' + money(sug) + '. Leave the selling price empty to always use this, or <button type="button" class="btn sm" data-act="itemUseSug" data-v="' + sug + '">use ' + money(sug) + '</button>'; };
+A.itemUseSug = function (el) { $('#i-price').value = el.getAttribute('data-v'); };
+F.item = function (form, btn) {
+  var g = function (id) { var v = val(id); return v === '' ? null : num(v); };
+  var product = { sku: val('i-sku'), cat: val('i-cat'), item: val('i-item'), type: val('i-type'), size: val('i-size'), inch: g('i-inch'), mat: val('i-mat'), painted: val('i-painted'),
+    vendor: val('i-vendor'), cost: g('i-cost'), price: g('i-price'), reorder: g('i-reorder'), notes: val('i-notes'), active: $('#i-active') ? $('#i-active').checked : true };
+  run(btn || $('.btn.primary', topSheet()), function () {
+    return call('saveProduct', { product: product, openingStock: $('#i-open') ? val('i-open') : '' }).then(function (r) {
+      mergeProducts([r.product]); if (r.lists) S.lists = r.lists; if (r.vendors) S.vendors = r.vendors;
+      closeSheet(); toast((product.sku ? 'Saved ' : 'Added ') + pname(r.product) + ' (' + r.product.sku + ')');
+      var then = itemThen; itemThen = '';
+      if (then && A[then]) { S.pick.q = ''; var q = $('#pickq'); if (q) q.value = ''; A[then]({ getAttribute: function () { return r.product.sku; } }); renderPickList(); }
+      else go(S.screen, S.arg);
+    });
+  });
+};
+
+/* ================= items list ================= */
+var ITEM_FILTERS = [['all', 'All'], ['low', 'Low stock'], ['nocount', 'Not counted'], ['noprice', 'No selling price'], ['hidden', 'Hidden']];
+function itemsShown() {
+  var f = S.itemsFilter;
+  return findItems(f.q, f.cat, true).filter(function (p) {
+    if (f.f === 'hidden') return !p.active;
+    if (!p.active) return false;
+    if (f.f === 'low') return isLow(p);
+    if (f.f === 'nocount') return p.stock === null;
+    if (f.f === 'noprice') return p.price === null;
+    return true;
+  });
+}
+function renderItems() {
+  var all = itemsShown(), rows = all.slice(0, 150), box = $('#itemlist'); if (!box) return;
+  $('#itemcount').textContent = all.length + (all.length === 1 ? ' item' : ' items');
+  box.innerHTML = rows.map(function (p) {
+    var sp = sellPrice(p), sub = psub(p);
+    return '<button class="item" data-act="openItem" data-v="' + esc(p.sku) + '"><span class="grow"><span class="t">' + esc(pname(p)) + '</span><br><span class="s">' + esc(p.sku) + (sub ? ', ' + esc(sub) : '') + ' ' + stockTag(p) + '</span></span>' +
+      '<span class="amt">' + (sp === null ? '<span class="muted small">No price</span>' : money(sp)) + '<br><span class="muted small" style="font-weight:400">cost ' + money(p.cost) + '</span></span></button>';
+  }).join('') + (all.length > rows.length ? '<div class="empty small">Showing 150 of ' + all.length + '. Search to find the rest.</div>' : '') + (!all.length ? '<div class="empty">No item matches.</div>' : '');
+}
+R.items = function (view) {
+  var f = S.itemsFilter;
+  view.innerHTML = '<div class="wrap"><div class="row wrapx"><div class="search grow" style="min-width:200px">' + ic('search') + '<input class="in" id="itemq" type="search" placeholder="Search items" autocomplete="off" data-in="itemq" value="' + esc(f.q) + '"></div>' +
+    '<button class="btn primary" data-act="newItem">' + ic('plus') + 'New item</button></div>' +
+    chipRow('itemFilter', ITEM_FILTERS, f.f) + chipRow('itemCat', [['', 'All categories']].concat(catsInUse().map(function (c) { return [c, c]; })), f.cat) +
+    '<div class="row"><span class="muted small grow" id="itemcount"></span><button class="btn sm" data-act="go" data-v="count">' + ic('count') + 'Stock count</button></div><div class="list" id="itemlist"></div></div>';
+  renderItems();
+};
+I.itemq = debounce(function (el) { S.itemsFilter.q = el.value; renderItems(); }, 120);
+A.itemFilter = function (el) { S.itemsFilter.f = el.getAttribute('data-v'); go('items'); };
+A.itemCat = function (el) { S.itemsFilter.cat = el.getAttribute('data-v'); go('items'); };
+A.openItem = function (el) {
+  var p = S.bySku[el.getAttribute('data-v')]; if (!p) return;
+  var sp = sellPrice(p);
+  sheet({ title: pname(p), wide: true, body: '<div class="row wrapx">' + stockTag(p) + (p.active ? '' : '<span class="tag">Hidden</span>') + '<span class="muted small">' + esc(p.sku) + ', ' + esc(p.cat) + (psub(p) ? ', ' + esc(psub(p)) : '') + '</span></div>' +
+    '<div class="panel"><div class="kv"><span>Cost price now</span><span class="n">' + money(p.cost) + '</span><span>Average cost of stock in the shop</span><span class="n">' + money(p.avg !== null ? p.avg : p.cost) + '</span>' +
+    '<span>Selling price' + (p.price === null && sp !== null ? ' (cost + ' + S.settings.MinMarkupPercent + '%)' : '') + '</span><span class="n">' + money(sp) + '</span>' +
+    '<span>Reorder when this many left</span><span class="n">' + level(p) + '</span><span>Usual vendor</span><span class="n">' + esc(p.vendor || '–') + '</span></div>' + (p.notes ? '<p class="small muted" style="margin-top:8px">' + esc(p.notes) + '</p>' : '') + '</div>' +
+    '<div class="row wrapx"><button class="btn" data-act="editItem" data-v="' + esc(p.sku) + '">' + ic('edit') + 'Change</button><button class="btn" data-act="adjust" data-v="' + esc(p.sku) + '">Broken, lost or found</button></div>' +
+    '<div id="itemhist">' + loadBox('Loading the history…') + '</div>' });
+  call('itemHistory', { sku: p.sku }).then(function (h) {
+    var e = $('#itemhist'); if (!e) return;
+    var out = '<p class="small muted">Sold ' + h.sold.qty + ' so far for ' + money(h.sold.revenue) + (h.sold.last ? ', last on ' + dLong(h.sold.last) : '') + '.</p>';
+    out += '<h3 style="margin:12px 0 6px">Deliveries and their cost</h3>' + (tableHtml([{ t: 'Date' }, { t: 'Vendor' }, { t: 'Qty', n: 1 }, { t: 'Cost of one', n: 1 }], h.purchases.map(function (x) { return [esc(dLong(x.date)) + (x.cancelled ? ' <span class="tag bad">Cancelled</span>' : ''), esc(x.vendor || '–'), x.qty, money(x.unitCost)]; })) || '<p class="muted small">No delivery recorded in the app yet.</p>');
+    if (h.prices.length) out += '<h3 style="margin:12px 0 6px">Price changes</h3>' + tableHtml([{ t: 'Date' }, { t: 'What' }, { t: 'From', n: 1 }, { t: 'To', n: 1 }], h.prices.map(function (x) { return [esc(dLong(x.date)), esc(x.field) + '<br><span class="muted small">' + esc(x.source) + '</span>', money(x.old), money(x.now)]; }));
+    if (h.moves.length) out += '<h3 style="margin:12px 0 6px">Stock changes</h3>' + tableHtml([{ t: 'Date' }, { t: 'What' }, { t: 'Change', n: 1 }, { t: 'Stock after', n: 1 }], h.moves.map(function (x) { return [esc(dLong(x.date)), esc(x.type) + (x.reason || x.ref ? '<br><span class="muted small">' + esc(x.reason || x.ref) + '</span>' : ''), x.qty === null ? '' : (x.qty > 0 ? '+' : '') + x.qty, x.after === null ? '–' : x.after]; }));
+    e.innerHTML = out;
+  }).catch(function (e2) { var e = $('#itemhist'); if (e) e.innerHTML = '<p class="small bad">' + esc(e2.message) + '</p>'; });
+};
+A.adjust = function (el) {
+  var p = S.bySku[el.getAttribute('data-v')]; closeSheet();
+  sheet({ title: 'Broken, lost or found', form: 'adjust', body: '<p><b>' + esc(fullName(p)) + '</b> ' + stockTag(p) + '</p><input type="hidden" id="a-sku" value="' + esc(p.sku) + '">' +
+    fld('What happened', sel('a-reason', S.lists.AdjustReason || [], (S.lists.AdjustReason || [])[0] || '')) +
+    '<div class="grid2">' + fld('How many pieces', numIn('a-qty', 1, 'step="1" min="1"')) + fld('Stock goes', sel('a-dir', ['Down (taken out)', 'Up (added)'], 'Down (taken out)')) + '</div>' + fld('Note', inp('a-note', '', 'autocomplete="off"')),
+    foot: '<button class="btn primary" data-act="submitTop">Save</button>' });
+};
+F.adjust = function (form, btn) {
+  var qty = Math.floor(n0(val('a-qty'))); if (qty < 1) return toast('Type how many pieces.', true);
+  if (val('a-dir').indexOf('Down') === 0) qty = -qty;
+  run(btn, function () { return call('adjustStock', { sku: val('a-sku'), qty: qty, reason: val('a-reason'), note: val('a-note') }).then(function (r) { mergeProducts([r.product]); S.dash = null; closeSheet(); toast('Stock updated'); go(S.screen, S.arg); }); });
+};
+
+/* ================= stock count ================= */
+var countMap = {}, countF = { q: '', cat: '' };
+function renderCount() {
+  var all = findItems(countF.q, countF.cat).slice(0, 200), box = $('#countlist'); if (!box) return;
+  box.innerHTML = all.map(function (p) {
+    return '<div class="item"><span class="grow"><span class="t">' + esc(pname(p)) + '</span><br><span class="s">' + esc(psub(p)) + ' ' + stockTag(p) + '</span></span>' +
+      '<input class="in num" style="width:84px" type="number" inputmode="numeric" min="0" step="1" placeholder="' + (p.stock === null ? '?' : p.stock) + '" value="' + esc(countMap[p.sku] === undefined ? '' : countMap[p.sku]) + '" data-in="countQty" data-v="' + esc(p.sku) + '" aria-label="Counted ' + esc(pname(p)) + '"></div>';
+  }).join('') || '<div class="empty">No item matches.</div>';
+  updateCountBar();
+}
+function updateCountBar() { var n = Object.keys(countMap).length, b = $('#countsave'); if (b) { b.disabled = !n; b.textContent = n ? 'Save count for ' + n + (n === 1 ? ' item' : ' items') : 'Type the counted numbers'; } }
+R.count = function (view) {
+  view.innerHTML = '<div class="wrap"><p class="muted">Type how many of each item are in the shop right now. Leave an item empty to skip it.</p><div class="search">' + ic('search') + '<input class="in" id="countq" type="search" placeholder="Search items" autocomplete="off" data-in="countq" value="' + esc(countF.q) + '"></div>' +
+    chipRow('countCat', [['', 'All']].concat(catsInUse().map(function (c) { return [c, c]; })), countF.cat) + '<div class="list" id="countlist"></div><div class="billbar" style="display:block!important"><button class="btn primary big" id="countsave" data-act="saveCount"></button></div></div>';
+  renderCount();
+};
+I.countq = debounce(function (el) { countF.q = el.value; renderCount(); }, 120);
+A.countCat = function (el) { countF.cat = el.getAttribute('data-v'); $all('[data-act="countCat"]').forEach(function (b) { b.setAttribute('aria-pressed', String(b === el)); }); renderCount(); };
+I.countQty = function (el) { var k = el.getAttribute('data-v'); if (el.value === '') delete countMap[k]; else countMap[k] = el.value; updateCountBar(); };
+A.saveCount = function (el) {
+  var items = Object.keys(countMap).map(function (k) { return { sku: k, counted: Math.floor(n0(countMap[k])) }; });
+  run(el, function () { return call('stockCount', { items: items }).then(function (r) { mergeProducts(r.products); countMap = {}; S.dash = null; toast(r.changed + (r.changed === 1 ? ' item' : ' items') + ' updated'); renderCount(); }); });
+};
+
+/* ================= pay later ================= */
+function loading(view, head) { view.innerHTML = '<div class="wrap">' + (head || '') + '<div id="body" class="stack">' + loadBox() + '</div></div>'; }
+function fail(e) { var b = $('#body'); if (b) b.innerHTML = '<div class="note bad">' + esc(e.message) + '</div>'; }
+function phoneLink(ph) { return ph ? '<a href="tel:' + esc(ph.replace(/[^0-9+]/g, '')) + '" target="_top" class="nowrap">' + esc(ph) + '</a>' : ''; }
+R.paylater = function (view) {
+  loading(view);
+  call('payLater').then(function (r) {
+    if (S.screen !== 'paylater') return;
+    $('#body').innerHTML = '<div class="hero"><div><div class="muted">Customers still owe</div><div class="big">' + money(r.total) + '</div></div></div>' +
+      (r.bills.length ? '<div class="list">' + r.bills.map(function (b) {
+        return '<div class="item"><span class="grow"><span class="t">' + esc(b.customer || 'No name') + '</span> ' + phoneLink(b.phone) + '<br><span class="s">' + esc(b.id) + ', ' + esc(dLong(b.date)) + ', bill ' + money(b.total) + ', paid ' + money(b.paid) + '</span></span>' +
+          '<span class="amt warn">' + money(b.balance) + '</span><button class="btn sm primary" data-act="receive" data-v="' + esc(b.id) + '" data-bal="' + b.balance + '" data-name="' + esc(b.customer) + '">Receive</button></div>';
+      }).join('') + '</div>' : '<div class="empty">Nobody owes anything. Bills saved with "paid later" show up here.</div>');
+  }).catch(fail);
+};
+A.receive = function (el) {
+  var bal = +el.getAttribute('data-bal');
+  if (topSheet()) closeSheet();
+  sheet({ title: 'Receive money', form: 'receive', body: '<p>' + esc(el.getAttribute('data-name') || 'Customer') + ' owes <b>' + money(bal) + '</b> on bill ' + esc(el.getAttribute('data-v')) + '.</p><input type="hidden" id="rc-id" value="' + esc(el.getAttribute('data-v')) + '">' +
+    '<div class="grid2">' + fld('Amount received', numIn('rc-amt', bal, 'autofocus')) + fld('Paid by', sel('rc-method', S.lists.PaymentMethod || ['Cash'], (S.lists.PaymentMethod || ['Cash'])[0])) + '</div>' +
+    fld('Date', '<input class="in" type="date" id="rc-date" max="' + today() + '" value="' + today() + '">'), foot: '<button class="btn primary" data-act="submitTop">Save</button>' });
+};
+F.receive = function (form, btn) {
+  run(btn, function () { return call('receivePayment', { id: val('rc-id'), amount: num(val('rc-amt')), method: val('rc-method'), date: val('rc-date') }).then(function (r) { S.dash = null; closeSheet(); toast(r.balance > 0 ? 'Saved. ' + money(r.balance) + ' still due.' : 'Saved. This bill is fully paid.'); go(S.screen, S.arg); }); });
+};
+
+/* ================= bills ================= */
+var billQ = '';
+R.bills = function (view) {
+  loading(view, '<div class="search">' + ic('search') + '<input class="in" id="billq" type="search" placeholder="Search by bill no., customer or phone" autocomplete="off" data-in="billq" value="' + esc(billQ) + '"></div>' + (billQ ? '' : rangeBar()));
+  var d = rangeDates();
+  call('bills', billQ ? { q: billQ } : { from: d[0], to: d[1] }).then(function (r) {
+    if (S.screen !== 'bills') return;
+    $('#body').innerHTML = r.bills.length ? '<div class="list">' + r.bills.map(function (b) {
+      return '<button class="item" data-act="openBill" data-v="' + esc(b.id) + '"><span class="grow"><span class="t">' + esc(b.id) + (b.billNo ? ' (book no. ' + esc(b.billNo) + ')' : '') + (b.customer ? ', ' + esc(b.customer) : '') + '</span><br><span class="s">' + esc(dDay(b.date)) + ', ' + esc(b.method) + ', sold by ' + esc(b.soldBy) + '</span></span>' +
+        (b.status === 'Cancelled' ? '<span class="tag bad">Cancelled</span>' : (b.balance > 0 ? '<span class="tag warn">' + money(b.balance) + ' due</span>' : '')) + '<span class="amt">' + money(b.total) + '</span></button>';
+    }).join('') + '</div>' : '<div class="empty">No bills ' + (billQ ? 'match this search.' : 'in this period.') + '</div>';
+  }).catch(fail);
+};
+I.billq = debounce(function (el) { billQ = el.value.trim(); go('bills'); var e = $('#billq'); if (e) { e.focus(); e.setSelectionRange(e.value.length, e.value.length); } }, 500);
+A.openBill = function (el) {
+  var id = el.getAttribute('data-v'), w = sheet({ title: 'Bill ' + id, wide: true, body: '<div id="billdetail">' + loadBox() + '</div>' });
+  call('bill', { id: id }).then(function (r) {
+    var b = r.bill, e = $('#billdetail', w); if (!e) return;
+    var canCancel = b.status !== 'Cancelled' && (S.user.role === 'admin' || S.settings.StaffCanCancelBills === 'Yes');
+    e.innerHTML = '<div class="stack"><div class="row wrapx">' + (b.status === 'Cancelled' ? '<span class="tag bad">Cancelled</span>' : '') + '<span class="muted">' + esc(dLong(b.date)) + ', sold by ' + esc(b.soldBy) + (b.billNo ? ', book no. ' + esc(b.billNo) : '') + '</span></div>' +
+      (b.customer ? '<div>' + esc(b.customer) + ' ' + phoneLink(b.phone) + '</div>' : '') +
+      tableHtml([{ t: 'Item' }, { t: 'Qty', n: 1 }, { t: 'Price', n: 1 }, { t: 'Amount', n: 1 }], r.lines.map(function (l) { return [esc(l.name) + (l.painted ? ' <span class="tag gold">Painted +' + money(l.paint) + '</span>' : ''), l.qty, money(l.price), money(l.total)]; })) +
+      '<div class="panel"><div class="kv"><span>Subtotal</span><span class="n">' + money(b.subtotal) + '</span>' + (b.discount ? '<span>Discount' + (b.discountType === 'Percent' ? ' ' + b.discountValue + '%' : '') + '</span><span class="n">−' + money(b.discount) + '</span>' : '') +
+      (b.tax ? '<span>Tax ' + b.taxPercent + '%</span><span class="n">' + money(b.tax) + '</span>' : '') + '<span class="total">Total</span><span class="n total">' + money(b.total) + '</span>' +
+      '<span>Paid</span><span class="n">' + money(b.paid) + '</span>' + (b.balance > 0 ? '<span class="warn">Still due</span><span class="n warn">' + money(b.balance) + '</span>' : '') +
+      '<span class="muted">Profit on this bill</span><span class="n muted">' + money(b.profit) + '</span></div></div>' +
+      (r.payments.length ? '<div class="small muted">' + r.payments.map(function (p) { return esc(dLong(p.date)) + ': ' + money(p.amount) + ' by ' + esc(p.method) + ' (' + esc(p.type) + ')'; }).join('<br>') + '</div>' : '') +
+      (b.notes ? '<p class="small muted">' + esc(b.notes) + '</p>' : '') + '<div class="row wrapx">' +
+      (b.balance > 0 && b.status !== 'Cancelled' ? '<button class="btn primary" data-act="receive" data-v="' + esc(b.id) + '" data-bal="' + b.balance + '" data-name="' + esc(b.customer) + '">Receive money</button>' : '') +
+      (canCancel ? '<button class="btn danger" data-act="cancelBill" data-v="' + esc(b.id) + '">Cancel this bill</button>' : '') + '</div></div>';
+  }).catch(function (e2) { var e = $('#billdetail', w); if (e) e.innerHTML = '<p class="bad">' + esc(e2.message) + '</p>'; });
+};
+A.cancelBill = function (el) {
+  var id = el.getAttribute('data-v');
+  confirmBox('Cancel bill ' + id + '?', 'The items go back into stock and the bill is taken out of all totals. This cannot be undone.', 'Cancel the bill', true).then(function (ok) {
+    if (!ok) return;
+    run(null, function () { return call('cancelSale', { id: id }).then(function (r) { mergeProducts(r.products); S.dash = null; closeAllSheets(); toast('Bill ' + id + ' cancelled'); go(S.screen, S.arg); }); });
+  });
+};
+
+/* ================= custom orders ================= */
+var ordersCache = [];
+var OTAG = { New: '', Ordered: 'gold', Arrived: 'good', Delivered: 'good', Cancelled: 'bad' };
+R.orders = function (view) {
+  loading(view, '<div class="row"><p class="muted grow">Special and bulk orders: what the customer wants, who asked, and where it comes from.</p><button class="btn primary" data-act="orderForm">' + ic('plus') + 'New order</button></div>');
+  call('orders').then(function (r) {
+    if (S.screen !== 'orders') return;
+    ordersCache = r.orders;
+    var open = r.orders.filter(function (o) { return o.status !== 'Delivered' && o.status !== 'Cancelled'; }), done = r.orders.filter(function (o) { return o.status === 'Delivered' || o.status === 'Cancelled'; });
+    var row = function (o) { return '<button class="item" data-act="openOrder" data-v="' + esc(o.id) + '"><span class="grow"><span class="t">' + esc(o.item) + (o.qty > 1 ? ' x' + o.qty : '') + '</span><br><span class="s">' + esc(o.customer) + (o.neededBy ? ', needed by ' + esc(dLong(o.neededBy)) : '') + '</span></span><span class="tag ' + OTAG[o.status] + '">' + esc(o.status) + '</span>' + (o.price !== null ? '<span class="amt">' + money(o.price) + '</span>' : '') + '</button>'; };
+    $('#body').innerHTML = (open.length ? '<div class="list">' + open.map(row).join('') + '</div>' : '<div class="empty">No open orders.</div>') + (done.length ? '<h3>Finished</h3><div class="list">' + done.map(row).join('') + '</div>' : '');
+  }).catch(fail);
+};
+function orderById(id) { for (var i = 0; i < ordersCache.length; i++) if (ordersCache[i].id === id) return ordersCache[i]; return null; }
+A.orderForm = function (el) {
+  var o = orderById(el.getAttribute('data-v') || '') || { id: '', date: today(), item: '', details: '', qty: 1, customer: '', phone: '', address: '', neededBy: '', price: null, cost: null, advance: '', advanceMethod: '', source: '', sourceContact: '', notes: '' };
+  if (topSheet()) closeSheet();
+  sheet({ title: o.id ? 'Change order ' + o.id : 'New custom order', form: 'order', wide: true, body: '<input type="hidden" id="o-id" value="' + esc(o.id) + '">' +
+    fld('Item the customer wants', inp('o-item', o.item, 'autocomplete="off"' + (o.id ? '' : ' autofocus'))) + fld('Details (size, colour, design)', '<textarea class="in" id="o-details">' + esc(o.details) + '</textarea>') +
+    '<div class="grid3">' + fld('Quantity', numIn('o-qty', o.qty, 'step="1" min="1"')) + fld('Order date', '<input class="in" type="date" id="o-date" max="' + today() + '" value="' + esc(o.date || today()) + '">') + fld('Needed by', '<input class="in" type="date" id="o-need" value="' + esc(o.neededBy) + '">') + '</div>' +
+    '<div class="grid2">' + fld('Asked by (customer name)', inp('o-cust', o.customer, 'autocomplete="off"')) + fld('Customer phone', inp('o-phone', o.phone, 'type="tel" autocomplete="off"')) + '</div>' + fld('Customer address', inp('o-addr', o.address, 'autocomplete="off"')) +
+    '<div class="grid2">' + fld('Agreed price (whole order)', numIn('o-price', o.price)) + fld('What it will cost you', numIn('o-cost', o.cost)) + fld('Advance received', numIn('o-adv', o.advance || '')) + fld('Advance paid by', sel('o-advm', S.lists.PaymentMethod || ['Cash'], o.advanceMethod, '', 'Not paid yet')) + '</div>' +
+    '<div class="grid2">' + fld('Getting it from (maker or shop)', inp('o-src', o.source, 'autocomplete="off"')) + fld('Their phone or address', inp('o-srcc', o.sourceContact, 'autocomplete="off"')) + '</div>' + fld('Note', inp('o-notes', o.notes, 'autocomplete="off"')),
+    foot: '<button class="btn primary" data-act="submitTop">' + (o.id ? 'Save changes' : 'Save order') + '</button>' });
+};
+F.order = function (form, btn) {
+  var g = function (id) { var v = val(id); return v === '' ? null : num(v); };
+  run(btn, function () {
+    return call('saveOrder', { order: { id: val('o-id'), date: val('o-date'), item: val('o-item'), details: val('o-details'), qty: val('o-qty'), customer: val('o-cust'), phone: val('o-phone'), address: val('o-addr'),
+      neededBy: val('o-need'), price: g('o-price'), cost: g('o-cost'), advance: n0(val('o-adv')), advanceMethod: val('o-advm'), source: val('o-src'), sourceContact: val('o-srcc'), notes: val('o-notes') } })
+      .then(function (r) { S.dash = null; closeSheet(); toast('Saved order ' + r.order.id); go('orders'); });
+  });
+};
+A.openOrder = function (el) {
+  var o = orderById(el.getAttribute('data-v')); if (!o) return;
+  var open = o.status !== 'Delivered' && o.status !== 'Cancelled', kv = function (k, v) { return v ? '<span>' + k + '</span><span class="n">' + v + '</span>' : ''; };
+  sheet({ title: o.id + ': ' + o.item, wide: true, body: '<div class="row wrapx"><span class="tag ' + OTAG[o.status] + '">' + esc(o.status) + '</span><span class="muted small">Ordered ' + esc(dLong(o.date)) + ' by ' + esc(o.by) + '</span></div>' + (o.details ? '<p>' + esc(o.details) + '</p>' : '') +
+    '<div class="panel"><div class="kv">' + kv('Quantity', o.qty) + kv('Asked by', esc(o.customer) + ' ' + phoneLink(o.phone)) + kv('Address', esc(o.address)) + kv('Needed by', esc(dLong(o.neededBy))) + kv('Agreed price', o.price !== null ? money(o.price) : '') + kv('Cost to you', o.cost !== null ? money(o.cost) : '') +
+    kv('Advance received', o.advance ? money(o.advance) + ' by ' + esc(o.advanceMethod) : '') + kv('Getting it from', esc(o.source)) + kv('Their contact', esc(o.sourceContact)) + kv('Bill', esc(o.saleId)) + '</div></div>' + (o.notes ? '<p class="small muted">' + esc(o.notes) + '</p>' : '') +
+    (open ? '<div class="stack"><span class="small muted">Where is it now?</span>' + chipRow('orderStatus', ['New', 'Ordered', 'Arrived'], o.status, 'wrapx') + '</div><div class="row wrapx"><button class="btn primary" data-act="billOrder" data-v="' + esc(o.id) + '">Deliver and make the bill</button><button class="btn" data-act="orderForm" data-v="' + esc(o.id) + '">' + ic('edit') + 'Change</button><button class="btn danger" data-act="cancelOrder" data-v="' + esc(o.id) + '">Cancel order</button></div>' : '') + '<input type="hidden" id="oid" value="' + esc(o.id) + '">' });
+};
+A.orderStatus = function (el) { run(el, function () { return call('orderStatus', { id: val('oid'), status: el.getAttribute('data-v') }).then(function () { S.dash = null; closeSheet(); toast('Order updated'); go('orders'); }); }); };
+A.cancelOrder = function (el) {
+  var o = orderById(el.getAttribute('data-v')); closeSheet();
+  sheet({ title: 'Cancel order ' + o.id + '?', body: '<p>' + esc(o.item) + ' for ' + esc(o.customer) + '.</p>' + (o.advance > 0 ? '<label class="check"><input type="checkbox" id="oc-refund" checked>The advance of ' + money(o.advance) + ' was given back to the customer</label>' : '') + '<input type="hidden" id="oc-id" value="' + esc(o.id) + '">',
+    foot: '<button class="btn" data-act="closeSheet">Keep the order</button><button class="btn danger" data-act="cancelOrderYes">Cancel the order</button>' });
+};
+A.cancelOrderYes = function (el) { run(el, function () { return call('orderStatus', { id: val('oc-id'), status: 'Cancelled', refund: $('#oc-refund') ? $('#oc-refund').checked : false }).then(function () { S.dash = null; closeSheet(); toast('Order cancelled'); go('orders'); }); }); };
+A.billOrder = function (el) {
+  var o = orderById(el.getAttribute('data-v')), qty = Math.max(1, o.qty || 1); closeSheet();
+  S.bill = newBill(); S.bill.orderId = o.id; S.bill.advance = o.advance || 0; S.bill.customer = o.customer; S.bill.phone = o.phone;
+  S.bill.lines.push({ id: uid(), sku: '', name: o.item, sub: 'Custom order ' + o.id, cat: 'Custom order', qty: qty, price: o.price !== null ? r2(o.price / qty) : '', painted: false, cost: o.cost !== null ? r2(o.cost / qty) : 0 });
+  SELL.done = null; SELL.step = 'bill'; go('sell');
+};
+
+/* ================= reports ================= */
+var REPORTS = [['summary', 'Profit'], ['items', 'Items sold'], ['tobuy', 'To buy'], ['slow', 'Not moving'], ['in', 'Deliveries'], ['prices', 'Price changes'], ['loss', 'Breakage']];
+var repTab = 'summary', repSort = 'most';
+R.reports = function (view) {
+  if (S.arg) { repTab = S.arg; S.arg = null; }
+  var ranged = repTab !== 'tobuy' && repTab !== 'slow';
+  loading(view, chipRow('repTab', REPORTS, repTab) + (ranged ? rangeBar() : ''));
+  var d = rangeDates(), q = { from: d[0], to: d[1] }, body = function (h) { if (S.screen === 'reports') $('#body').innerHTML = h; };
+  if (repTab === 'in') return call('purchases', q).then(function (r) {
+    var items = 0, travel = 0; r.purchases.forEach(function (p) { if (p.status !== 'Cancelled') { items += p.itemsCost; travel += p.travel; } });
+    body(tableHtml([{ t: 'Date' }, { t: 'Delivery' }, { t: 'Vendor' }, { t: 'Items', n: 1 }, { t: 'Travel', n: 1 }, { t: 'Total', n: 1 }], r.purchases.map(function (p) { return [esc(dLong(p.date)), '<button class="btn sm quiet" data-act="openPurchase" data-v="' + esc(p.id) + '">' + esc(p.id) + '</button>' + (p.status === 'Cancelled' ? ' <span class="tag bad">Cancelled</span>' : ''), esc(p.vendor || '–') + (p.billNo ? '<br><span class="muted small">Bill ' + esc(p.billNo) + '</span>' : ''), money(p.itemsCost), money(p.travel), money(p.total)]; }), ['Total', '', '', money(items), money(travel), money(items + travel)]) || '<div class="empty">No deliveries in this period. Record one under Stock in.</div>');
+  }).catch(fail);
+  if (repTab === 'prices') return call('priceLog', q).then(function (r) {
+    body(tableHtml([{ t: 'Date' }, { t: 'Item' }, { t: 'What' }, { t: 'From', n: 1 }, { t: 'To', n: 1 }], r.rows.map(function (x) { return [esc(dLong(x.date)), esc(x.name), esc(x.field) + '<br><span class="muted small">' + esc(x.source) + ', ' + esc(x.by) + '</span>', money(x.old), money(x.now)]; })) || '<div class="empty">No cost or selling price changed in this period.</div>');
+  }).catch(fail);
+  if (repTab === 'loss') return call('losses', q).then(function (r) {
+    var tot = 0; r.rows.forEach(function (x) { if (x.qty < 0) tot += x.value; });
+    body(tableHtml([{ t: 'Date' }, { t: 'Item' }, { t: 'What happened' }, { t: 'Pieces', n: 1 }, { t: 'Value at cost', n: 1 }], r.rows.map(function (x) { return [esc(dLong(x.date)), esc(x.name), esc(x.reason) + '<br><span class="muted small">' + esc(x.by) + '</span>', (x.qty > 0 ? '+' : '') + x.qty, x.qty < 0 ? money(x.value) : '']; }), ['Lost in this period', '', '', '', money(tot)]) || '<div class="empty">Nothing broken or lost was recorded in this period.</div>');
+  }).catch(fail);
+  loadDash().then(function (dd) {
+    var t = dd.tot, h = '';
+    if (repTab === 'summary') {
+      h = '<div class="panel"><div class="kv"><span>Sales (' + t.bills + ' bills, ' + t.units + ' items)</span><span class="n">' + money(t.sales) + '</span>' + (t.tax ? '<span>Tax collected</span><span class="n">−' + money(t.tax) + '</span>' : '') +
+        '<span>Cost of the items sold</span><span class="n">−' + money(t.cogs) + '</span><span class="total">Profit on items</span><span class="n total">' + money(t.profit) + '</span>' +
+        '<span>Travel and transport</span><span class="n">−' + money(t.travel) + '</span><span>Breakage and other losses</span><span class="n">−' + money(t.loss) + '</span><span class="total">Profit after these</span><span class="n total ' + (t.net < 0 ? 'bad' : 'good') + '">' + money(t.net) + '</span></div></div>' +
+        '<div class="panel"><div class="kv"><span>Discounts given</span><span class="n">' + money(t.discount) + '</span><span>Earned from painting for customers</span><span class="n">' + money(t.paint) + '</span><span>Money received</span><span class="n">' + money(t.received) + '</span><span>Stock bought (deliveries)</span><span class="n">' + money(t.bought) + '</span></div></div>' +
+        (tableHtml([{ t: 'Category' }, { t: 'Sold', n: 1 }, { t: 'Sales', n: 1 }, { t: 'Profit', n: 1 }], dd.cats.map(function (c) { return [esc(c.cat), c.qty, money(c.rev), money(c.profit)]; })) || '') +
+        (tableHtml([{ t: 'Sold by' }, { t: 'Bills', n: 1 }, { t: 'Sales', n: 1 }], dd.sellers.map(function (c) { return [esc(c.name), c.bills, money(c.sales)]; })) || '');
+    } else if (repTab === 'items') {
+      var list = dd.items.slice(); if (repSort === 'least') list.sort(function (a, b) { return a.qty - b.qty; });
+      h = chipRow('repSort', [['most', 'Best sellers first'], ['least', 'Slowest first']], repSort) + (tableHtml([{ t: 'Item' }, { t: 'Sold', n: 1 }, { t: 'Sales', n: 1 }, { t: 'Profit', n: 1 }], list.map(function (i) { return [esc(i.name) + '<br><span class="muted small">' + esc(i.cat) + '</span>', i.qty, money(i.rev), money(i.profit)]; }), ['Total', t.units, money(r2(t.sales - t.tax)), money(t.profit)]) || '<div class="empty">Nothing sold in this period.</div>');
+    } else if (repTab === 'tobuy') {
+      var buy = toBuyList(), est = 0; buy.forEach(function (b) { est += b.buy * (b.p.cost || 0); });
+      h = '<p class="muted">Items that are low now, or will run out within ' + S.settings.ReorderPlanDays + ' days at the speed they sold in the last 30 days. Only counted items appear.</p>' +
+        (tableHtml([{ t: 'Item' }, { t: 'In stock', n: 1 }, { t: 'Buy about', n: 1 }, { t: 'Why' }, { t: 'Last cost', n: 1 }, { t: 'Vendor' }], buy.map(function (b) { return [esc(fullName(b.p)), b.p.stock, b.buy, esc(b.why), money(b.p.cost), esc(b.p.vendor || '–')]; }), ['About', '', '', '', money(est), '']) || '<div class="empty">Nothing needs buying right now.</div>');
+    } else {
+      var lim = addDays(today(), -(S.settings.NonMovingDays || 90)), rows = S.products.filter(function (p) { return p.active && (p.stock === null || p.stock > 0) && (!dd.lastSold[p.sku] || dd.lastSold[p.sku] < lim); });
+      rows.sort(function (a, b) { return (dd.lastSold[a.sku] || '') < (dd.lastSold[b.sku] || '') ? -1 : 1; });
+      var young = !dd.firstSale || dd.firstSale > lim;
+      h = '<p class="muted">Items in the shop that have not sold for ' + S.settings.NonMovingDays + ' days or more.</p>' + (young ? '<div class="note">' + ic('alert') + '<div>The app has less than ' + S.settings.NonMovingDays + ' days of sales so far, so this list is not reliable yet.</div></div>' : '') +
+        (tableHtml([{ t: 'Item' }, { t: 'In stock', n: 1 }, { t: 'Last sold' }, { t: 'Value at cost', n: 1 }], rows.slice(0, 300).map(function (p) { return [esc(fullName(p)), p.stock === null ? 'Not counted' : p.stock, dd.lastSold[p.sku] ? esc(dLong(dd.lastSold[p.sku])) : 'Never in the app', p.stock ? money(p.stock * (p.avg || p.cost || 0)) : '']; })) || '<div class="empty">Every item has sold recently.</div>');
+    }
+    body(h);
+  }).catch(fail);
+};
+A.repTab = function (el) { repTab = el.getAttribute('data-v'); go('reports'); };
+A.repSort = function (el) { repSort = el.getAttribute('data-v'); go('reports'); };
+A.openPurchase = function (el) {
+  var id = el.getAttribute('data-v'), w = sheet({ title: 'Delivery ' + id, wide: true, body: '<div id="pdetail">' + loadBox() + '</div>' });
+  call('purchase', { id: id }).then(function (r) {
+    var p = r.purchase, e = $('#pdetail', w); if (!e) return;
+    e.innerHTML = '<div class="stack"><div class="muted">' + (p.status === 'Cancelled' ? '<span class="tag bad">Cancelled</span> ' : '') + esc(dLong(p.date)) + ', ' + esc(p.vendor || 'no vendor') + (p.billNo ? ', bill ' + esc(p.billNo) : '') + ', typed in by ' + esc(p.by) + '</div>' +
+      tableHtml([{ t: 'Item' }, { t: 'Qty', n: 1 }, { t: 'Cost of one', n: 1 }, { t: 'Amount', n: 1 }], r.lines.map(function (l) { return [esc(l.name) + (l.prevCost !== null && Math.abs(l.prevCost - l.unitCost) > 0.004 ? '<br><span class="muted small">was ' + money(l.prevCost) + '</span>' : ''), l.qty, money(l.unitCost), money(l.cost)]; }), ['Items', '', '', money(p.itemsCost)]) +
+      '<div class="panel"><div class="kv"><span>Travel or transport</span><span class="n">' + money(p.travel) + '</span><span class="total">Total paid</span><span class="n total">' + money(p.total) + '</span></div></div>' + (p.notes ? '<p class="small muted">' + esc(p.notes) + '</p>' : '') +
+      (S.user.role === 'admin' && p.status !== 'Cancelled' ? '<div><button class="btn danger" data-act="cancelPurchase" data-v="' + esc(p.id) + '">Cancel this delivery</button></div>' : '') + '</div>';
+  }).catch(function (e2) { var e = $('#pdetail', w); if (e) e.innerHTML = '<p class="bad">' + esc(e2.message) + '</p>'; });
+};
+A.cancelPurchase = function (el) {
+  var id = el.getAttribute('data-v');
+  confirmBox('Cancel delivery ' + id + '?', 'The stock it added is taken out again. Use this when a delivery was typed in wrongly.', 'Cancel the delivery', true).then(function (ok) {
+    if (ok) run(null, function () { return call('cancelPurchase', { id: id }).then(function (r) { mergeProducts(r.products); S.dash = null; closeAllSheets(); toast('Delivery ' + id + ' cancelled'); go(S.screen, S.arg); }); });
+  });
+};
+
+/* ================= vendors ================= */
+R.vendors = function (view) {
+  view.innerHTML = '<div class="wrap"><div class="row"><p class="muted grow">People and shops you buy stock from.</p><button class="btn primary" data-act="vendorForm">' + ic('plus') + 'New vendor</button></div>' +
+    (S.vendors.length ? '<div class="list">' + S.vendors.map(function (v, i) { return '<button class="item" data-act="vendorForm" data-v="' + i + '"><span class="grow"><span class="t">' + esc(v.name) + '</span>' + (v.active ? '' : ' <span class="tag">Not used now</span>') + '<br><span class="s">' + esc([v.place, v.phone, v.notes].filter(Boolean).join(', ') || 'No details yet') + '</span></span>' + ic('edit') + '</button>'; }).join('') + '</div>' : '<div class="empty">No vendors yet. Add one here, or just type a name when you record a delivery.</div>') + '</div>';
+};
+A.vendorForm = function (el) {
+  var i = el.getAttribute('data-v'), v = i === null ? { name: '', place: '', phone: '', notes: '', active: true } : S.vendors[+i];
+  sheet({ title: i === null ? 'New vendor' : 'Change vendor', form: 'vendor', body: '<input type="hidden" id="v-old" value="' + esc(i === null ? '' : v.name) + '">' + fld('Name', inp('v-name', v.name, 'autocomplete="off"' + (i === null ? ' autofocus' : ''))) +
+    '<div class="grid2">' + fld('Place', inp('v-place', v.place, 'autocomplete="off"')) + fld('Phone', inp('v-phone', v.phone, 'type="tel" autocomplete="off"')) + '</div>' + fld('Note (what they supply)', inp('v-notes', v.notes, 'autocomplete="off"')) +
+    (i === null ? '' : '<label class="check"><input type="checkbox" id="v-active"' + (v.active ? ' checked' : '') + '>Still buying from this vendor</label>'), foot: '<button class="btn primary" data-act="submitTop">Save</button>' });
+};
+F.vendor = function (form, btn) {
+  run(btn, function () { return call('saveVendor', { oldName: val('v-old'), vendor: { name: val('v-name'), place: val('v-place'), phone: val('v-phone'), notes: val('v-notes'), active: $('#v-active') ? $('#v-active').checked : true } }).then(function (r) { S.vendors = r.vendors; if (r.products) setProducts(r.products); closeSheet(); toast('Saved'); go('vendors'); }); });
+};
+
+/* ================= settings (admin) ================= */
+var SET_GROUPS = [
+  ['Shop', [['ShopName', 'Shop name'], ['LocationName', 'Place'], ['ShopPhone', 'Shop phone'], ['CurrencySymbol', 'Currency symbol'], ['Timezone', 'Time zone']]],
+  ['Prices', [['MinMarkupPercent', 'Smallest markup on cost (%)', 'The app suggests cost + this % as the selling price and warns below it.'], ['PaintExtraPercent', 'Extra for painting for a customer (%)', 'Added to the price when "Painted for customer" is ticked on a bill.'], ['RoundPricesTo', 'Round suggested prices up to the next', 'In rupees. 5 turns 132 into 135.'], ['TaxName', 'Tax name'], ['TaxPercent', 'Tax on every bill (%)', 'Keep 0 while the shop does not charge GST.']]],
+  ['Stock and reminders', [['DefaultReorderLevel', 'Low stock when this many or fewer are left', 'An item can have its own number.'], ['ReorderPlanDays', 'The "To buy" list looks ahead (days)'], ['NonMovingDays', 'Not moving after (days without a sale)'], ['FestivalAlertDays', 'Show a festival this many days before']]],
+  ['Bills and sign-in', [['DefaultSoldBy', '"Sold by" on a new bill'], ['StaffCanCancelBills', 'Staff may cancel a saved bill'], ['SessionDays', 'Stay signed in for (days)']]]
+];
+var LIST_LABELS = [['Category', 'Categories'], ['Size', 'Sizes'], ['Material', 'Materials'], ['PaymentMethod', 'Ways to pay'], ['Staff', 'People who use the app'], ['AdjustReason', 'Reasons for broken, lost or found stock']];
+var festDraft = [];
+function festRows() {
+  return festDraft.map(function (f, i) { return '<tr><td><input class="in" type="date" id="f-d' + i + '" value="' + esc(f.date) + '" data-in="fest" data-i="' + i + '" data-k="date" aria-label="Date"></td><td><input class="in" id="f-n' + i + '" value="' + esc(f.name) + '" data-in="fest" data-i="' + i + '" data-k="name" aria-label="Festival" style="min-width:150px"></td><td><input class="in" id="f-s' + i + '" value="' + esc(f.notes) + '" data-in="fest" data-i="' + i + '" data-k="notes" aria-label="What to stock" style="min-width:200px"></td><td><button class="iconbtn" data-act="festDel" data-i="' + i + '" aria-label="Remove">' + ic('trash') + '</button></td></tr>'; }).join('');
+}
+R.settings = function (view) {
+  var s = S.settings, th = store('skm_theme') || 'auto';
+  festDraft = S.festivals.filter(function (f) { return f.date >= addDays(today(), -30); }).map(function (f) { return { date: f.date, name: f.name, type: f.type, notes: f.notes }; });
+  var groups = SET_GROUPS.map(function (g) {
+    return '<div class="panel stack"><h3>' + g[0] + '</h3><div class="grid2">' + g[1].map(function (f) {
+      var k = f[0], c;
+      if (k === 'StaffCanCancelBills') c = sel('set-' + k, ['Yes', 'No'], s[k]);
+      else if (k === 'DefaultSoldBy') c = sel('set-' + k, [s.ShopName].concat(S.lists.Staff || []), s[k], '', 'The person who is signed in');
+      else if (k === 'Timezone') c = sel('set-' + k, ['Asia/Kolkata', 'Asia/Dubai', 'Asia/Singapore', 'Europe/London', 'America/New_York'], s[k]);
+      else if (typeof s[k] === 'number') c = numIn('set-' + k, s[k]);
+      else c = inp('set-' + k, s[k], 'autocomplete="off"');
+      return fld(f[1], c, f[2]);
+    }).join('') + '</div></div>';
+  }).join('');
+  view.innerHTML = '<div class="wrap"><form class="stack" data-form="settings" novalidate>' + groups + '<div><button class="btn primary" type="submit">Save settings</button></div></form>' +
+    '<form class="panel stack" data-form="lists" novalidate><h3>Lists</h3><p class="muted small">One entry on each line. These fill the dropdowns in the app and in the sheet.</p><div class="grid2">' + LIST_LABELS.map(function (l) { return fld(l[1], '<textarea class="in" id="list-' + l[0] + '" rows="5">' + esc((S.lists[l[0]] || []).join('\n')) + '</textarea>'); }).join('') + '</div><div><button class="btn primary" type="submit">Save lists</button></div>' +
+    '<h3 style="margin-top:6px">Rename on every item</h3><p class="muted small">Changes the name in the list and on all items that use it.</p><div class="grid3">' + fld('List', sel('rn-list', ['Category', 'Size', 'Material'], 'Category', 'data-in="rnList"')) + fld('Old name', '<span id="rn-oldbox">' + sel('rn-old', S.lists.Category || [], '') + '</span>') + fld('New name', inp('rn-new', '', 'autocomplete="off"')) + '</div><div><button class="btn" type="button" data-act="renameEverywhere">Rename</button></div></form>' +
+    '<div class="panel stack"><h3>Festivals</h3><p class="muted small">Each one shows on the home screen ' + s.FestivalAlertDays + ' days before its date, with the note about what to stock. Dates change every year, so add next year\'s here.</p><div class="tablebox"><table class="t"><thead><tr><th>Date</th><th>Festival</th><th>What to stock</th><th></th></tr></thead><tbody id="festbody">' + festRows() + '</tbody></table></div>' +
+    '<div class="row wrapx"><button class="btn" data-act="festAdd">' + ic('plus') + 'Add a festival</button><button class="btn primary" data-act="festSave">Save festivals</button></div></div>' +
+    pinPanel() +
+    (PWA ? '<div class="panel stack"><h3>Other phones and tablets</h3><p class="muted small">Send this set-up link to a phone or tablet. Opening it once connects that device to the shop, and the app then offers to install itself. Anyone who gets this link can open the shop app, so send it only to the family.</p>' +
+      '<input class="in" id="setuplink" readonly aria-label="Set-up link" value="' + esc(setupLink()) + '"><div class="row wrapx"><button class="btn primary" data-act="shareSetup">Share the link</button><button class="btn" data-act="copySetup">Copy</button><button class="btn danger" data-act="disconnect">Disconnect this device</button></div></div>' : '') +
+    '<div class="panel stack"><h3>This phone or computer</h3><div class="grid2">' + fld('Colours', sel('theme', ['Follow the device', 'Light', 'Dark'], th === 'dark' ? 'Dark' : th === 'light' ? 'Light' : 'Follow the device', 'data-in="theme"')) + '</div>' +
+    (S.sheetUrl ? '<div><a class="btn" href="' + esc(S.sheetUrl) + '" target="_blank" rel="noopener">Open the Google Sheet</a></div>' : '') + '<p class="muted small">App version ' + esc(String(S.version || '')) + ', screens ' + UI_VERSION + '</p></div></div>';
+};
+F.settings = function (form) {
+  var out = {}; SET_GROUPS.forEach(function (g) { g[1].forEach(function (f) { out[f[0]] = val('set-' + f[0]); }); });
+  run($('button[type=submit]', form), function () { return call('saveSettings', { settings: out }).then(function (r) { S.settings = r.settings; S.tz = r.tz; S.dash = null; frame(); go('settings'); toast('Settings saved'); }); });
+};
+function linesOf(id) { return ($('#' + id).value || '').split('\n').map(function (x) { return x.trim(); }).filter(Boolean); }
+F.lists = function (form) {
+  var lists = {}; LIST_LABELS.forEach(function (l) { lists[l[0]] = linesOf('list-' + l[0]); });
+  run($('button[type=submit]', form), function () { return call('saveLists', { lists: lists }).then(function (r) { S.lists = r.lists; go('settings'); toast('Lists saved'); }); });
+};
+I.rnList = function (el) { $('#rn-oldbox').innerHTML = sel('rn-old', S.lists[el.value] || [], ''); };
+A.renameEverywhere = function (el) {
+  var list = val('rn-list'), from = val('rn-old'), to = val('rn-new'); if (!from || !to) return toast('Choose the old name and type the new one.', true);
+  var lists = {}; lists[list] = (S.lists[list] || []).map(function (x) { return x === from ? to : x; }); var ren = {}; ren[list] = [[from, to]];
+  run(el, function () { return call('saveLists', { lists: lists, renames: ren }).then(function (r) { S.lists = r.lists; if (r.products) setProducts(r.products); go('settings'); toast('Renamed ' + from + ' to ' + to); }); });
+};
+I.fest = function (el) { festDraft[+el.getAttribute('data-i')][el.getAttribute('data-k')] = el.value; };
+A.festAdd = function () { festDraft.push({ date: '', name: '', type: 'Festival', notes: '' }); $('#festbody').innerHTML = festRows(); var e = $('#f-d' + (festDraft.length - 1)); if (e) e.focus(); };
+A.festDel = function (el) { festDraft.splice(+el.getAttribute('data-i'), 1); $('#festbody').innerHTML = festRows(); };
+A.festSave = function (el) {
+  var old = S.festivals.filter(function (f) { return f.date < addDays(today(), -30); });
+  run(el, function () { return call('saveFestivals', { festivals: old.concat(festDraft) }).then(function (r) { S.festivals = r.festivals; go('settings'); toast('Festivals saved'); }); });
+};
+function pinPanel() {
+  var on = !S.user.open;
+  var a = fld(on ? 'New admin PIN' : 'Admin PIN (4 to 8 digits)', '<input class="in pin" id="pin-admin" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password">', on ? 'Leave empty to keep the current one' : 'Opens Settings and is needed to cancel bills'),
+    b = fld(on ? 'New shop PIN for staff' : 'Shop PIN for staff (optional)', '<input class="in pin" id="pin-shop" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password">', on ? (S.shopPin ? 'Leave empty to keep the current one' : 'Staff sign in without a PIN now') : 'Leave empty to let staff in without a PIN');
+  return '<form class="panel stack" data-form="pins" novalidate><h3>PIN sign-in</h3>' +
+    (on ? '<p class="muted small">On. Everyone signs in with a PIN, and only the admin PIN opens Settings. Changing a PIN signs out every other phone and computer.</p>'
+      : '<div class="note">' + ic('alert') + '<div><b>Off.</b> The app opens straight away for anyone who has the link. Turn this on when you want a PIN asked first.</div></div>') +
+    '<div class="grid2">' + a + b + '</div>' +
+    (on && S.shopPin ? '<label class="check"><input type="checkbox" id="pin-remove">Remove the shop PIN (staff sign in without one)</label>' : '') +
+    '<div class="row wrapx">' + (on ? '<button class="btn primary" type="submit">Change PINs</button><button class="btn" type="button" data-act="signOutAll">Sign out all other devices</button><button class="btn danger" type="button" data-act="pinOff">Turn off PIN sign-in</button>'
+      : '<button class="btn primary" type="submit">Turn on PIN sign-in</button>') + '</div></form>';
+}
+F.pins = function (form) {
+  var on = !S.user.open, pay = { adminPin: val('pin-admin'), shopPin: val('pin-shop'), removeShopPin: $('#pin-remove') ? $('#pin-remove').checked : false };
+  if (!on) pay.require = 'Yes';
+  run($('button[type=submit]', form), function () {
+    return call('changePins', pay).then(function (r) { S.token = r.token; store('skm_token', r.token); return boot(); }).then(function () { toast(on ? 'PINs changed' : 'PIN sign-in is on'); });
+  });
+};
+A.pinOff = function () {
+  confirmBox('Turn off PIN sign-in?', 'The app will open straight away for anyone who has the link, with no PIN.', 'Turn it off', true).then(function (ok) {
+    if (!ok) return;
+    run(null, function () {
+      return call('changePins', { require: 'No' }).then(function () { store('skm_token', null); S.token = 'open:' + (store('skm_name') || ''); return boot(); }).then(function () { toast('PIN sign-in is off'); });
+    });
+  });
+};
+A.signOutAll = function (el) { run(el, function () { return call('signOutAll').then(function (r) { S.token = r.token; store('skm_token', r.token); toast('Every other device is signed out'); }); }); };
+I.theme = function (el) { var v = el.value === 'Dark' ? 'dark' : el.value === 'Light' ? 'light' : null; store('skm_theme', v); if (v) document.documentElement.setAttribute('data-theme', v); else document.documentElement.removeAttribute('data-theme'); };
+
+start();
+})();
+</script>
+</body>
+</html>
