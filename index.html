@@ -45,15 +45,19 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:'Anek Malayal
 #shell .note ol{margin:.375rem 0 .5rem;padding-left:1.375rem}
 #shell .note li{margin:.25rem 0}
 #shell .note .said{margin-top:.5rem;color:var(--muted);overflow-wrap:anywhere}
-#shell .wait{display:flex;flex-direction:column;gap:.75rem;color:var(--muted);font-weight:600}
-#shell .bar{position:relative;height:.75rem;border-radius:.375rem;background:var(--sunk);border:1px solid var(--line);overflow:hidden}
-#shell .bar i{position:absolute;top:0;bottom:0;left:-45%;width:45%;border-radius:.375rem;background:var(--teal);animation:shellslide 1.15s ease-in-out infinite}
+/* opening the shop: the icon, one loading bar under it. The sizes are in px so that nothing moves when the app's own screens take over. */
+#shell .wait{display:flex;flex-direction:column;align-items:center;gap:22px;color:var(--muted);font-weight:600;font-size:15.2px;text-align:center}
+#shell .appicon{display:block;width:132px;height:132px;border-radius:22%;box-shadow:0 10px 28px rgba(7,54,58,.32);animation:shellpop .5s cubic-bezier(.2,1.5,.4,1) both,shelllive 2.4s ease-in-out .5s infinite}
+@keyframes shellpop{from{transform:scale(.35);opacity:0}to{transform:none;opacity:1}}
+@keyframes shelllive{50%{transform:scale(1.045)}}
+#shell .bar{position:relative;width:260px;max-width:80%;height:10px;border-radius:5px;background:var(--sunk);border:1px solid var(--line);overflow:hidden}
+#shell .bar i{position:absolute;top:0;bottom:0;left:-45%;width:45%;border-radius:5px;background:var(--teal);animation:shellslide 1.15s ease-in-out infinite}
 @keyframes shellslide{from{left:-45%}to{left:100%}}
-@media (prefers-reduced-motion:reduce){#shell .bar i{animation:none;left:0;width:100%;opacity:.55}}
+@media (prefers-reduced-motion:reduce){#shell .appicon{animation:none}#shell .bar i{animation:none;left:0;width:100%;opacity:.55}}
 </style>
 </head>
 <body>
-<div id="shell"><div class="card"><div><div class="name">ShivaKripa Mart</div></div><div class="border"></div><div class="wait" role="status"><span>Opening the shop…</span><div class="bar"><i></i></div></div></div></div>
+<div id="shell"><div class="card"><div class="wait" role="status"><img class="appicon" src="icon-192.png" srcset="icon-192.png 1x, icon-512.png 2x" alt="" width="132" height="132"><div class="bar"><i></i></div><span>Opening the shop…</span></div></div></div>
 <script>
 /* ShivaKripa Mart: the starter page.
 
@@ -67,7 +71,7 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:'Anek Malayal
   'use strict';
   var LINK = 'skm_api', SCREENS = 'skm_screens', VER = 'skm_screens_v', OLD = 'skm_screens_old', OLDV = 'skm_screens_old_v', BAD = 'skm_screens_bad';
   var KEEP = { skm_size: 1, skm_theme: 1 };
-  var d = document, w = window, running = false, touched = false, lastAsk = 0, asking = null;
+  var d = document, w = window, running = false, touched = false, lastAsk = 0, asking = null, born = Date.now();
 
   function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function put(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -151,6 +155,8 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:'Anek Malayal
     each(scripts, function (s) { if (s.parentNode) s.parentNode.removeChild(s); });
     var old = d.getElementById('shell-css'); if (old) old.parentNode.removeChild(old);
     if (doc.title) d.title = doc.title;
+    /* the icon has already popped up on this page: the screens show it without doing that a second time */
+    if (d.querySelector('#shell .appicon') && Date.now() - born > 450) d.documentElement.setAttribute('data-splashed', '1');
     /* what the screens say about <html> and <body> (language, classes) is taken over; this page's own install details stay */
     each(doc.documentElement.attributes, function (a) { d.documentElement.setAttribute(a.name, a.value); });
     each(doc.body.attributes, function (a) { d.body.setAttribute(a.name, a.value); });
@@ -198,7 +204,7 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:'Anek Malayal
     return el;
   }
   function head() { return '<div><div class="name">' + esc(get('skm_shop') || 'ShivaKripa Mart') + '</div></div><div class="border"></div>'; }
-  function loader() { shell().innerHTML = '<div class="card">' + head() + '<div class="wait" role="status"><span>Opening the shop…</span><div class="bar"><i></i></div></div></div>'; }
+  function loader() { shell().innerHTML = '<div class="card"><div class="wait" role="status"><img class="appicon" src="icon-192.png" srcset="icon-192.png 1x, icon-512.png 2x" alt="" width="132" height="132"><div class="bar"><i></i></div><span>Opening the shop…</span></div></div>'; }
   var STEPS = '<ol><li><b>Deploy</b>, then <b>Manage deployments</b>.</li><li>The pencil, then <b>Who has access: Anyone</b>.</li><li><b>Version: New version</b>, then <b>Deploy</b>.</li></ol>';
   /* Why did the shop link not hand over the screens? Gives the words to show. */
   function why(link, e) {
